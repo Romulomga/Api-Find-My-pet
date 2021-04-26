@@ -13,22 +13,23 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using FindMyPet.Domain;
 using FindMyPet.Dto;
+using FindMyPet.Controllers.Base;
+using FindMyPet.Business.Interfaces;
+using FindMyPet.Models;
 
 namespace FindMyPet.Controllers
 {
     [Route("api/auth")]
     [ApiController]
-    public class AuthController : ControllerBase
+    public class AuthController : BaseController
     {
         private readonly IConfiguration _config;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IMapper _mapper;
 
-        public AuthController(IConfiguration config, UserManager<User> userManager,
-                              SignInManager<User> signInManager, IMapper mapper)
+        public AuthController(INotificator notificator, IConfiguration config, UserManager<User> userManager, SignInManager<User> signInManager, IMapper mapper, ITokenUser user) : base(notificator, user)
         {
             _config = config;
             _userManager = userManager;
@@ -36,108 +37,99 @@ namespace FindMyPet.Controllers
             _mapper = mapper;
         }
 
-        // GET: api/User/5
         [HttpPost("login")]
         [AllowAnonymous]
         public async Task<IActionResult> Login(UserLoginDto userLogin)
         {
-            try
+            if (!ModelState.IsValid) return CustomResponse(ModelState);
+
+            var user = await _userManager.FindByEmailAsync(userLogin.Email);
+            var result = await _signInManager.PasswordSignInAsync(user, userLogin.Password, false, true);
+            
+            if (result.Succeeded)
             {
-                var user = await _userManager.FindByEmailAsync(userLogin.Email);
-                var result = await _signInManager.CheckPasswordSignInAsync(user, userLogin.Password, false);
-
-                if (result.Succeeded)
-                {
-                    var appUser = await _userManager.Users.FirstOrDefaultAsync(u => u.Email == user.Email);
-                    var userToReturn = _mapper.Map<UserDto>(appUser);
-
-                    return Ok(new
-                    {
-                        token = GenerateJWToken(appUser).Result,
-                        user = userToReturn
-                    });
-                }
-
-                return Unauthorized();
+                return CustomResponse(await GerarJwt(user));
             }
-            catch (Exception ex)
+            if (result.IsLockedOut)
             {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, $"ERROR {ex.Message}");
+                NotificateError("Usuário temporariamente bloqueado por tentativas inválidas");
+                return CustomResponse(userLogin);
             }
+            
+            NotificateError("Usuário ou Senha incorretos");
+            return CustomResponse(userLogin);
         }
 
         // POST: api/User
         [HttpPost("register")]
         [AllowAnonymous]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Register(UserDto userDto)
+        public async Task<IActionResult> Register(UserRegisterDto userRegisterDto)
         {
-            try
+            if (!ModelState.IsValid) return CustomResponse(ModelState);
+
+            var user = new User
             {
-                var user = await _userManager.FindByEmailAsync(userDto.Email);
+                UserName = userRegisterDto.UserName,
+                Email = userRegisterDto.Email
+            };
 
-                if (user == null)
-                {
-                    user = new User
-                    {
-                        UserName = userDto.UserName,
-                        Email = userDto.Email,
-                        AvatarUrl = userDto.AvatarUrl
-                    };
+            var result = await _userManager.CreateAsync(user, userRegisterDto.Password);
 
-                    var result = await _userManager.CreateAsync(user, userDto.Password);
-
-                    if (result.Succeeded) {
-
-                        var createdUser = await _userManager.Users.FirstOrDefaultAsync(u => u.Email == user.Email);
-                        var token = GenerateJWToken(createdUser).Result;
-
-                        return Created("Registered user", new { result = new { user = createdUser, token = token } });
-                    }
-                }
-
-                return BadRequest($"A candidate with the mail \"{userDto.Email}\" already exists.");
-            }
-            catch (Exception ex)
+            if (result.Succeeded)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"{ex.Message}");
+                user = await _userManager.FindByEmailAsync(user.Email);
+                await _signInManager.SignInAsync(user, false);
+
+                return CustomResponse(await GerarJwt(user));
             }
+            foreach (var error in result.Errors)
+            {
+                NotificateError(error.Description);
+            }
+
+            return CustomResponse(userRegisterDto);
         }
 
-        private async Task<string> GenerateJWToken(User user)
+        private async Task<UserLoginResponseDto> GerarJwt(User user)
         {
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Email, user.Email)
-            };
+            var claims = await _userManager.GetClaimsAsync(user);
+            var userRoles = await _userManager.GetRolesAsync(user);
 
-            var roles = await _userManager.GetRolesAsync(user);
-
-            foreach (var role in roles)
+            claims.Add(new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Email, user.Email));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Nbf, ToUnixEpochDate(DateTime.UtcNow).ToString()));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Iat, ToUnixEpochDate(DateTime.UtcNow).ToString(), ClaimValueTypes.Integer64));
+            foreach (var userRole in userRoles)
             {
-                claims.Add(new Claim(ClaimTypes.Role, role));
+                claims.Add(new Claim("role", userRole));
             }
 
-            var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_config["AppSettings:Token"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-
-            var tokenDescription = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(claims),
-                Issuer = _config["Jwt:Issuer"],
-                Audience = _config["Jwt:Audience"],
-                Expires = DateTime.Now.AddDays(int.Parse(_config["Jwt:ExpirationHours"])),
-                SigningCredentials = creds
-            };
+            var identityClaims = new ClaimsIdentity();
+            identityClaims.AddClaims(claims);
 
             var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_config["Jwt:Secret"]);
+            var token = tokenHandler.CreateToken(new SecurityTokenDescriptor
+            {
+                Issuer = _config["Jwt:Issuer"],
+                Audience = _config["Jwt:Audience"],
+                Subject = identityClaims,
+                Expires = DateTime.UtcNow.AddHours(int.Parse(_config["Jwt:ExpirationHours"])),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            });
 
-            var token = tokenHandler.CreateToken(tokenDescription);
+            var encodedToken = tokenHandler.WriteToken(token);
 
-            return tokenHandler.WriteToken(token);
+            var response = new UserLoginResponseDto
+            {
+                Token = encodedToken,
+                User = _mapper.Map<UserDto>(user)
+            };
+
+            return response;
         }
+
+        private static long ToUnixEpochDate(DateTime date) => (long)Math.Round((date.ToUniversalTime() - new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero)).TotalSeconds);
     }
 }

@@ -748,11 +748,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Rômulo Monteiro\\Desktop\\Api Find My pet\\FindMyPet.Domain\\FindMyPet.Domain.csproj",
-      "projectName": "FindMyPet.Domain",
-      "projectPath": "C:\\Users\\Rômulo Monteiro\\Desktop\\Api Find My pet\\FindMyPet.Domain\\FindMyPet.Domain.csproj",
+      "projectUniqueName": "C:\\Users\\Rômulo Monteiro\\Api Find My pet\\FindMyPet.Domain\\FindMyPet.Business.csproj",
+      "projectName": "FindMyPet.Business",
+      "projectPath": "C:\\Users\\Rômulo Monteiro\\Api Find My pet\\FindMyPet.Domain\\FindMyPet.Business.csproj",
       "packagesPath": "C:\\Users\\Rômulo Monteiro\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Rômulo Monteiro\\Desktop\\Api Find My pet\\FindMyPet.Domain\\obj\\",
+      "outputPath": "C:\\Users\\Rômulo Monteiro\\Api Find My pet\\FindMyPet.Domain\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Rômulo Monteiro\\AppData\\Roaming\\NuGet\\NuGet.Config",

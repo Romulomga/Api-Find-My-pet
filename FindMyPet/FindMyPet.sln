@@ -5,9 +5,9 @@ VisualStudioVersion = 16.0.30907.101
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FindMyPet", "FindMyPet.csproj", "{2373246C-7FC0-4A63-9C33-A3C2C6793996}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FindMyPet.Domain", "..\FindMyPet.Domain\FindMyPet.Domain.csproj", "{98D825E0-BAD2-4FD1-BDD7-D6661D2B03E6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FindMyPet.Business", "..\FindMyPet.Domain\FindMyPet.Business.csproj", "{98D825E0-BAD2-4FD1-BDD7-D6661D2B03E6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FindMyPet.Repository", "..\FindMyPet.Repository\FindMyPet.Repository.csproj", "{7445A48F-E149-4CE0-BD41-5756986E75A6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FindMyPet.Repository", "..\FindMyPet.Repository\FindMyPet.Repository.csproj", "{7445A48F-E149-4CE0-BD41-5756986E75A6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

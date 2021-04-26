@@ -250,17 +250,17 @@
           "lib/netstandard1.3/System.Diagnostics.DiagnosticSource.dll": {}
         }
       },
-      "FindMyPet.Domain/1.0.0": {
+      "FindMyPet.Business/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v3.1",
         "dependencies": {
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "5.0.5"
         },
         "compile": {
-          "bin/placeholder/FindMyPet.Domain.dll": {}
+          "bin/placeholder/FindMyPet.Business.dll": {}
         },
         "runtime": {
-          "bin/placeholder/FindMyPet.Domain.dll": {}
+          "bin/placeholder/FindMyPet.Business.dll": {}
         }
       }
     }
@@ -749,15 +749,15 @@
         "version.txt"
       ]
     },
-    "FindMyPet.Domain/1.0.0": {
+    "FindMyPet.Business/1.0.0": {
       "type": "project",
-      "path": "../FindMyPet.Domain/FindMyPet.Domain.csproj",
-      "msbuildProject": "../FindMyPet.Domain/FindMyPet.Domain.csproj"
+      "path": "../FindMyPet.Domain/FindMyPet.Business.csproj",
+      "msbuildProject": "../FindMyPet.Domain/FindMyPet.Business.csproj"
     }
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v3.1": [
-      "FindMyPet.Domain >= 1.0.0",
+      "FindMyPet.Business >= 1.0.0",
       "Microsoft.AspNetCore.Identity.EntityFrameworkCore >= 5.0.5"
     ]
   },
@@ -767,11 +767,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Rômulo Monteiro\\Desktop\\Api Find My pet\\FindMyPet.Repository\\FindMyPet.Repository.csproj",
+      "projectUniqueName": "C:\\Users\\Rômulo Monteiro\\Api Find My pet\\FindMyPet.Repository\\FindMyPet.Repository.csproj",
       "projectName": "FindMyPet.Repository",
-      "projectPath": "C:\\Users\\Rômulo Monteiro\\Desktop\\Api Find My pet\\FindMyPet.Repository\\FindMyPet.Repository.csproj",
+      "projectPath": "C:\\Users\\Rômulo Monteiro\\Api Find My pet\\FindMyPet.Repository\\FindMyPet.Repository.csproj",
       "packagesPath": "C:\\Users\\Rômulo Monteiro\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Rômulo Monteiro\\Desktop\\Api Find My pet\\FindMyPet.Repository\\obj\\",
+      "outputPath": "C:\\Users\\Rômulo Monteiro\\Api Find My pet\\FindMyPet.Repository\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Rômulo Monteiro\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -788,8 +788,8 @@
         "netcoreapp3.1": {
           "targetAlias": "netcoreapp3.1",
           "projectReferences": {
-            "C:\\Users\\Rômulo Monteiro\\Desktop\\Api Find My pet\\FindMyPet.Domain\\FindMyPet.Domain.csproj": {
-              "projectPath": "C:\\Users\\Rômulo Monteiro\\Desktop\\Api Find My pet\\FindMyPet.Domain\\FindMyPet.Domain.csproj"
+            "C:\\Users\\Rômulo Monteiro\\Api Find My pet\\FindMyPet.Domain\\FindMyPet.Business.csproj": {
+              "projectPath": "C:\\Users\\Rômulo Monteiro\\Api Find My pet\\FindMyPet.Domain\\FindMyPet.Business.csproj"
             }
           }
         }

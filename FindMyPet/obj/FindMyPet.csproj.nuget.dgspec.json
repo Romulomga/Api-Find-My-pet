@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Rômulo Monteiro\\Desktop\\Api Find My pet\\FindMyPet\\FindMyPet.csproj": {}
+    "C:\\Users\\Rômulo Monteiro\\Api Find My pet\\FindMyPet\\FindMyPet.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Rômulo Monteiro\\Desktop\\Api Find My pet\\FindMyPet.Domain\\FindMyPet.Domain.csproj": {
+    "C:\\Users\\Rômulo Monteiro\\Api Find My pet\\FindMyPet.Domain\\FindMyPet.Business.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Rômulo Monteiro\\Desktop\\Api Find My pet\\FindMyPet.Domain\\FindMyPet.Domain.csproj",
-        "projectName": "FindMyPet.Domain",
-        "projectPath": "C:\\Users\\Rômulo Monteiro\\Desktop\\Api Find My pet\\FindMyPet.Domain\\FindMyPet.Domain.csproj",
+        "projectUniqueName": "C:\\Users\\Rômulo Monteiro\\Api Find My pet\\FindMyPet.Domain\\FindMyPet.Business.csproj",
+        "projectName": "FindMyPet.Business",
+        "projectPath": "C:\\Users\\Rômulo Monteiro\\Api Find My pet\\FindMyPet.Domain\\FindMyPet.Business.csproj",
         "packagesPath": "C:\\Users\\Rômulo Monteiro\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Rômulo Monteiro\\Desktop\\Api Find My pet\\FindMyPet.Domain\\obj\\",
+        "outputPath": "C:\\Users\\Rômulo Monteiro\\Api Find My pet\\FindMyPet.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Rômulo Monteiro\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -64,14 +64,14 @@
         }
       }
     },
-    "C:\\Users\\Rômulo Monteiro\\Desktop\\Api Find My pet\\FindMyPet.Repository\\FindMyPet.Repository.csproj": {
+    "C:\\Users\\Rômulo Monteiro\\Api Find My pet\\FindMyPet.Repository\\FindMyPet.Repository.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Rômulo Monteiro\\Desktop\\Api Find My pet\\FindMyPet.Repository\\FindMyPet.Repository.csproj",
+        "projectUniqueName": "C:\\Users\\Rômulo Monteiro\\Api Find My pet\\FindMyPet.Repository\\FindMyPet.Repository.csproj",
         "projectName": "FindMyPet.Repository",
-        "projectPath": "C:\\Users\\Rômulo Monteiro\\Desktop\\Api Find My pet\\FindMyPet.Repository\\FindMyPet.Repository.csproj",
+        "projectPath": "C:\\Users\\Rômulo Monteiro\\Api Find My pet\\FindMyPet.Repository\\FindMyPet.Repository.csproj",
         "packagesPath": "C:\\Users\\Rômulo Monteiro\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Rômulo Monteiro\\Desktop\\Api Find My pet\\FindMyPet.Repository\\obj\\",
+        "outputPath": "C:\\Users\\Rômulo Monteiro\\Api Find My pet\\FindMyPet.Repository\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Rômulo Monteiro\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -88,8 +88,8 @@
           "netcoreapp3.1": {
             "targetAlias": "netcoreapp3.1",
             "projectReferences": {
-              "C:\\Users\\Rômulo Monteiro\\Desktop\\Api Find My pet\\FindMyPet.Domain\\FindMyPet.Domain.csproj": {
-                "projectPath": "C:\\Users\\Rômulo Monteiro\\Desktop\\Api Find My pet\\FindMyPet.Domain\\FindMyPet.Domain.csproj"
+              "C:\\Users\\Rômulo Monteiro\\Api Find My pet\\FindMyPet.Domain\\FindMyPet.Business.csproj": {
+                "projectPath": "C:\\Users\\Rômulo Monteiro\\Api Find My pet\\FindMyPet.Domain\\FindMyPet.Business.csproj"
               }
             }
           }
@@ -128,14 +128,14 @@
         }
       }
     },
-    "C:\\Users\\Rômulo Monteiro\\Desktop\\Api Find My pet\\FindMyPet\\FindMyPet.csproj": {
+    "C:\\Users\\Rômulo Monteiro\\Api Find My pet\\FindMyPet\\FindMyPet.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Rômulo Monteiro\\Desktop\\Api Find My pet\\FindMyPet\\FindMyPet.csproj",
+        "projectUniqueName": "C:\\Users\\Rômulo Monteiro\\Api Find My pet\\FindMyPet\\FindMyPet.csproj",
         "projectName": "FindMyPet",
-        "projectPath": "C:\\Users\\Rômulo Monteiro\\Desktop\\Api Find My pet\\FindMyPet\\FindMyPet.csproj",
+        "projectPath": "C:\\Users\\Rômulo Monteiro\\Api Find My pet\\FindMyPet\\FindMyPet.csproj",
         "packagesPath": "C:\\Users\\Rômulo Monteiro\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Rômulo Monteiro\\Desktop\\Api Find My pet\\FindMyPet\\obj\\",
+        "outputPath": "C:\\Users\\Rômulo Monteiro\\Api Find My pet\\FindMyPet\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Rômulo Monteiro\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -152,11 +152,11 @@
           "net5.0": {
             "targetAlias": "net5.0",
             "projectReferences": {
-              "C:\\Users\\Rômulo Monteiro\\Desktop\\Api Find My pet\\FindMyPet.Domain\\FindMyPet.Domain.csproj": {
-                "projectPath": "C:\\Users\\Rômulo Monteiro\\Desktop\\Api Find My pet\\FindMyPet.Domain\\FindMyPet.Domain.csproj"
+              "C:\\Users\\Rômulo Monteiro\\Api Find My pet\\FindMyPet.Domain\\FindMyPet.Business.csproj": {
+                "projectPath": "C:\\Users\\Rômulo Monteiro\\Api Find My pet\\FindMyPet.Domain\\FindMyPet.Business.csproj"
               },
-              "C:\\Users\\Rômulo Monteiro\\Desktop\\Api Find My pet\\FindMyPet.Repository\\FindMyPet.Repository.csproj": {
-                "projectPath": "C:\\Users\\Rômulo Monteiro\\Desktop\\Api Find My pet\\FindMyPet.Repository\\FindMyPet.Repository.csproj"
+              "C:\\Users\\Rômulo Monteiro\\Api Find My pet\\FindMyPet.Repository\\FindMyPet.Repository.csproj": {
+                "projectPath": "C:\\Users\\Rômulo Monteiro\\Api Find My pet\\FindMyPet.Repository\\FindMyPet.Repository.csproj"
               }
             }
           }
@@ -183,7 +183,17 @@
               "target": "Package",
               "version": "[5.0.5, )"
             },
-            "Microsoft.AspNetCore.Mvc.NewtonsoftJson": {
+            "Microsoft.AspNetCore.Mvc.Versioning": {
+              "target": "Package",
+              "version": "[5.0.0, )"
+            },
+            "Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer": {
+              "target": "Package",
+              "version": "[5.0.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
               "target": "Package",
               "version": "[5.0.5, )"
             },

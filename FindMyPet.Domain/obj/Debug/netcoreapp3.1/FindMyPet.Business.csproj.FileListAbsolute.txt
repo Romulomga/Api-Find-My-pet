@@ -1,0 +1,9 @@
+C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet.Domain\bin\Debug\netcoreapp3.1\FindMyPet.Business.deps.json
+C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet.Domain\bin\Debug\netcoreapp3.1\FindMyPet.Business.dll
+C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet.Domain\bin\Debug\netcoreapp3.1\FindMyPet.Business.pdb
+C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet.Domain\obj\Debug\netcoreapp3.1\FindMyPet.Business.csprojAssemblyReference.cache
+C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet.Domain\obj\Debug\netcoreapp3.1\FindMyPet.Business.AssemblyInfoInputs.cache
+C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet.Domain\obj\Debug\netcoreapp3.1\FindMyPet.Business.AssemblyInfo.cs
+C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet.Domain\obj\Debug\netcoreapp3.1\FindMyPet.Business.csproj.CoreCompileInputs.cache
+C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet.Domain\obj\Debug\netcoreapp3.1\FindMyPet.Business.dll
+C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet.Domain\obj\Debug\netcoreapp3.1\FindMyPet.Business.pdb

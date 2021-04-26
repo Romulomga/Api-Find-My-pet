@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Rômulo Monteiro\\Desktop\\Api Find My pet\\FindMyPet.Domain\\FindMyPet.Domain.csproj": {}
+    "C:\\Users\\Rômulo Monteiro\\Api Find My pet\\FindMyPet.Domain\\FindMyPet.Domain.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Rômulo Monteiro\\Desktop\\Api Find My pet\\FindMyPet.Domain\\FindMyPet.Domain.csproj": {
+    "C:\\Users\\Rômulo Monteiro\\Api Find My pet\\FindMyPet.Domain\\FindMyPet.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Rômulo Monteiro\\Desktop\\Api Find My pet\\FindMyPet.Domain\\FindMyPet.Domain.csproj",
+        "projectUniqueName": "C:\\Users\\Rômulo Monteiro\\Api Find My pet\\FindMyPet.Domain\\FindMyPet.Domain.csproj",
         "projectName": "FindMyPet.Domain",
-        "projectPath": "C:\\Users\\Rômulo Monteiro\\Desktop\\Api Find My pet\\FindMyPet.Domain\\FindMyPet.Domain.csproj",
+        "projectPath": "C:\\Users\\Rômulo Monteiro\\Api Find My pet\\FindMyPet.Domain\\FindMyPet.Domain.csproj",
         "packagesPath": "C:\\Users\\Rômulo Monteiro\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Rômulo Monteiro\\Desktop\\Api Find My pet\\FindMyPet.Domain\\obj\\",
+        "outputPath": "C:\\Users\\Rômulo Monteiro\\Api Find My pet\\FindMyPet.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Rômulo Monteiro\\AppData\\Roaming\\NuGet\\NuGet.Config",
