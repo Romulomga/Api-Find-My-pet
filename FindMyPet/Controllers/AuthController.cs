@@ -44,20 +44,24 @@ namespace FindMyPet.Controllers
             if (!ModelState.IsValid) return CustomResponse(ModelState);
 
             var user = await _userManager.FindByEmailAsync(userLogin.Email);
-            var result = await _signInManager.PasswordSignInAsync(user, userLogin.Password, false, true);
-            
-            if (result.Succeeded)
+
+            if (user != null)
             {
-                return CustomResponse(await GerarJwt(user));
-            }
-            if (result.IsLockedOut)
-            {
-                NotificateError("Usuário temporariamente bloqueado por tentativas inválidas");
-                return CustomResponse(userLogin);
+                var result = await _signInManager.PasswordSignInAsync(user, userLogin.Password, false, true);
+
+                if (result.Succeeded)
+                {
+                    return CustomResponse(await GerarJwt(user));
+                }
+                if (result.IsLockedOut)
+                {
+                    NotificateError("Usuário temporariamente bloqueado por tentativas inválidas");
+                    return CustomResponse();
+                }
             }
             
             NotificateError("Usuário ou Senha incorretos");
-            return CustomResponse(userLogin);
+            return CustomResponse();
         }
 
         // POST: api/User
@@ -87,7 +91,7 @@ namespace FindMyPet.Controllers
                 NotificateError(error.Description);
             }
 
-            return CustomResponse(userRegisterDto);
+            return CustomResponse();
         }
 
         private async Task<UserLoginResponseDto> GerarJwt(User user)

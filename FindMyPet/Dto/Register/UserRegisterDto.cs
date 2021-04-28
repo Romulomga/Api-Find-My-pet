@@ -21,6 +21,8 @@ namespace FindMyPet.Dto
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
+        [Required(ErrorMessage = "O campo {0} é obrigatório")]
+        [StringLength(20, ErrorMessage = "O campo {0} precisa ter entre {2} e {1} caracteres", MinimumLength = 4)]
         [Compare("Password", ErrorMessage = "As senhas não conferem.")]
         [DataType(DataType.Password)]
         public string ConfirmPassword { get; set; }

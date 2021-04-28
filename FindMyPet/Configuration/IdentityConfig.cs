@@ -20,6 +20,7 @@ namespace FindMyPet.Configuration
             services.AddIdentity<User, IdentityRole<long>>(options =>
             {
                 options.User.RequireUniqueEmail = true;
+                options.User.AllowedUserNameCharacters = string.Empty;
 
                 options.Password.RequireDigit = false;
                 options.Password.RequireNonAlphanumeric = false;
