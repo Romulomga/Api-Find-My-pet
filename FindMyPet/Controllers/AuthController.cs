@@ -1,22 +1,23 @@
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using FindMyPet.Dto;
 using FindMyPet.Controllers.Base;
 using FindMyPet.Business.Interfaces;
 using FindMyPet.Models;
+using FindMyPet.Helpers;
+using Microsoft.Extensions.Options;
+using System.Net.Http;
+using Newtonsoft.Json;
+using FindMyPet.Models.Facebbok;
+using FindMyPet.Dto.Login;
 
 namespace FindMyPet.Controllers
 {
@@ -24,17 +25,19 @@ namespace FindMyPet.Controllers
     [ApiController]
     public class AuthController : BaseController
     {
-        private readonly IConfiguration _config;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly IMapper _mapper;
+        private readonly JwtSettings _jwtSettings;
+        private readonly FacebookAuthSettings _facebookAuthSettings;
 
-        public AuthController(INotificator notificator, IConfiguration config, UserManager<User> userManager, SignInManager<User> signInManager, IMapper mapper, ITokenUser user) : base(notificator, user)
+        public AuthController(INotificator notificator, UserManager<User> userManager, SignInManager<User> signInManager, IMapper mapper, ITokenUser user, IOptions<JwtSettings> jwtSettings, IOptions<FacebookAuthSettings> facebookAuthSettings) : base(notificator, user)
         {
-            _config = config;
             _userManager = userManager;
             _signInManager = signInManager;
             _mapper = mapper;
+            _jwtSettings = jwtSettings.Value;
+            _facebookAuthSettings = facebookAuthSettings.Value;
         }
 
         [HttpPost("login")]
@@ -64,7 +67,63 @@ namespace FindMyPet.Controllers
             return CustomResponse();
         }
 
-        // POST: api/User
+        [HttpPost("login/facebook")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Facebook(UserFacebookLoginDto userFacebookLogin)
+        {
+            if (!ModelState.IsValid) return CustomResponse(ModelState);
+
+            // 1.generate an app access token
+            var appAccessTokenResponse = await new HttpClient().GetStringAsync($"https://graph.facebook.com/oauth/access_token?client_id={_facebookAuthSettings.AppId}&client_secret={_facebookAuthSettings.AppSecret}&grant_type=client_credentials");
+            var appAccessToken = JsonConvert.DeserializeObject<FacebookAppAccessToken>(appAccessTokenResponse);
+            // 2. validate the user access token
+            var userAccessTokenValidationResponse = await new HttpClient().GetStringAsync($"https://graph.facebook.com/debug_token?input_token={userFacebookLogin.AccessToken}&access_token={appAccessToken.AccessToken}");
+            var userAccessTokenValidation = JsonConvert.DeserializeObject<FacebookUserAccessTokenValidation>(userAccessTokenValidationResponse);
+
+            if (!userAccessTokenValidation.Data.IsValid)
+            {
+                NotificateError("Token inválido.");
+                return CustomResponse();
+            }
+
+            // 3. we've got a valid token so we can request user data from fb
+            var userInfoResponse = await new HttpClient().GetStringAsync($"https://graph.facebook.com/v10.0/me?fields=id,email,name,picture&access_token={userFacebookLogin.AccessToken}");
+            var userInfo = JsonConvert.DeserializeObject<FacebookUserData>(userInfoResponse);
+
+            // 4. ready to create the local user account (if necessary) and jwt
+            var user = await _userManager.FindByEmailAsync(userInfo.Email);
+
+            if (user == null)
+            {
+                user = new User
+                {
+                    UserName = userInfo.Name,
+                    Email = userInfo.Email,
+                    AvatarUrl = userInfo.Picture.Data.Url
+                };
+
+                var result = await _userManager.CreateAsync(user, Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Substring(0, 8));
+
+                if (result.Succeeded)
+                {
+                    user = await _userManager.FindByEmailAsync(user.Email);
+                    await _signInManager.SignInAsync(user, false);
+
+                    return CustomResponse(await GerarJwt(user));
+                }
+                foreach (var error in result.Errors)
+                {
+                    NotificateError(error.Description);
+                }
+
+                return CustomResponse();
+            }
+
+            await _signInManager.SignInAsync(user, false);
+
+            return CustomResponse(await GerarJwt(user));
+        }
+
         [HttpPost("register")]
         [AllowAnonymous]
         public async Task<IActionResult> Register(UserRegisterDto userRegisterDto)
@@ -113,13 +172,13 @@ namespace FindMyPet.Controllers
             identityClaims.AddClaims(claims);
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_config["Jwt:Secret"]);
+            var key = Encoding.ASCII.GetBytes(_jwtSettings.Secret);
             var token = tokenHandler.CreateToken(new SecurityTokenDescriptor
             {
-                Issuer = _config["Jwt:Issuer"],
-                Audience = _config["Jwt:Audience"],
+                Issuer = _jwtSettings.Issuer,
+                Audience = _jwtSettings.Audience,
                 Subject = identityClaims,
-                Expires = DateTime.UtcNow.AddHours(int.Parse(_config["Jwt:ExpirationHours"])),
+                Expires = DateTime.UtcNow.AddHours(_jwtSettings.ExpirationHours),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             });
 

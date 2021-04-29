@@ -1,5 +1,6 @@
 using AutoMapper;
 using FindMyPet.Configuration;
+using FindMyPet.Helpers;
 using FindMyPet.Repository.Context;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

@@ -1,5 +1,6 @@
 ﻿using FindMyPet.Data;
 using FindMyPet.Extensions;
+using FindMyPet.Helpers;
 using FindMyPet.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -36,6 +37,13 @@ namespace FindMyPet.Configuration
             .AddDefaultTokenProviders();
 
             // JWT
+            var jwtSettingsSection = configuration.GetSection(nameof(JwtSettings));
+            var facebookAuthSettingsSection = configuration.GetSection(nameof(FacebookAuthSettings));
+
+            services.Configure<JwtSettings>(jwtSettingsSection);
+            services.Configure<FacebookAuthSettings>(facebookAuthSettingsSection);
+
+            var jwtSettings = jwtSettingsSection.Get<JwtSettings>();
 
             services.AddAuthentication(x =>
             {
@@ -51,9 +59,9 @@ namespace FindMyPet.Configuration
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = configuration["Jwt:Issuer"],
-                    ValidAudience = configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration["Jwt:Secret"])),
+                    ValidIssuer = jwtSettings.Issuer,
+                    ValidAudience = jwtSettings.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings.Secret)),
                 };
             });
 
