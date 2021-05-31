@@ -13,18 +13,18 @@ namespace FindMyPet.Controllers.Base
     [ApiController]
     public class BaseController : ControllerBase
     {
-        private readonly INotificator _notificator;
+        private readonly INotificator Notificator;
         public readonly ITokenUser AppUser;
 
         protected BaseController(INotificator notificador, ITokenUser appUser)
         {
-            _notificator = notificador;
+            Notificator = notificador;
             AppUser = appUser;
         }
 
         protected bool IsValidOperation()
         {
-            return !_notificator.haveNotification();
+            return !Notificator.haveNotification();
         }
 
         protected ActionResult CustomResponse(object result = null)
@@ -41,7 +41,7 @@ namespace FindMyPet.Controllers.Base
             return BadRequest(new
             {
                 Success = false,
-                Errors = _notificator.getNotifications().Select(n => n.Mensagem)
+                Errors = Notificator.getNotifications().Select(n => n.Message)
             });
         }
 
@@ -53,17 +53,17 @@ namespace FindMyPet.Controllers.Base
 
         protected void NotificateErrorModelInvalid(ModelStateDictionary modelState)
         {
-            var erros = modelState.Values.SelectMany(e => e.Errors);
-            foreach (var erro in erros)
+            var Erros = modelState.Values.SelectMany(e => e.Errors);
+            foreach (var Erro in Erros)
             {
-                var errorMsg = erro.Exception == null ? erro.ErrorMessage : erro.Exception.Message;
-                NotificateError(errorMsg);
+                var ErrorMsg = Erro.Exception == null ? Erro.ErrorMessage : Erro.Exception.Message;
+                NotificateError(ErrorMsg);
             }
         }
 
-        protected void NotificateError(string mensagem)
+        protected void NotificateError(string message)
         {
-            _notificator.Handle(new Notification(mensagem));
+            Notificator.Handle(new Notification(message));
         }
     }
 }

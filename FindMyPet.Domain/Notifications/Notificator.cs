@@ -6,26 +6,26 @@ namespace FindMyPet.Business.Notifications
 {
     public class Notificator : INotificator
     {
-        private List<Notification> _notifications;
+        private List<Notification> Notifications;
 
         public Notificator()
         {
-            _notifications = new List<Notification>();
+            Notifications = new List<Notification>();
         }
 
-        public void Handle(Notification notificacao)
+        public void Handle(Notification notification)
         {
-            _notifications.Add(notificacao);
+            Notifications.Add(notification);
         }
 
         public List<Notification> getNotifications()
         {
-            return _notifications;
+            return Notifications;
         }
 
         public bool haveNotification()
         {
-            return _notifications.Any();
+            return Notifications.Any();
         }
     }
 }

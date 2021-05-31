@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace FindMyPet.Dto.Login
 {
-    public class UserFacebookLoginDto
+    public class SocialLoginDto
     {
         [Required(ErrorMessage = "O campo {0} é obrigatório")]
         public string AccessToken { get; set; }
+        public string UserName { get; set; }
+
     }
 }

@@ -30,4 +30,8 @@
     <ProjectReference Include="..\FindMyPet.Repository\FindMyPet.Repository.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Dto\Register\Responses\" />
+  </ItemGroup>
+
 </Project>

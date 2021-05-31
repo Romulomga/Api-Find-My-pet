@@ -2,11 +2,11 @@
 {
     public class Notification
     {
-        public Notification(string mensagem)
+        public Notification(string message)
         {
-            Mensagem = mensagem;
+            Message = message;
         }
 
-        public string Mensagem { get; }
+        public string Message { get; }
     }
 }
