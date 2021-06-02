@@ -11,9 +11,9 @@ namespace FindMyPet
     {
         private readonly IHttpContextAccessor _accessor;
 
-        public TokenUser(IHttpContextAccessor accessor = null)
+        public TokenUser(IHttpContextAccessor Accessor = null)
         {
-            _accessor = accessor;
+            _accessor = Accessor;
         }
 
         public string Name => _accessor.HttpContext.User.Identity.Name;
@@ -36,25 +36,25 @@ namespace FindMyPet
 
     public static class ClaimsPrincipalExtensions
     {
-        public static string GetUserId(this ClaimsPrincipal principal)
+        public static string GetUserId(this ClaimsPrincipal Principal)
         {
-            if (principal == null)
+            if (Principal == null)
             {
-                throw new ArgumentException(nameof(principal));
+                throw new ArgumentException(nameof(Principal));
             }
 
-            var claim = principal.FindFirst(ClaimTypes.NameIdentifier);
+            var claim = Principal.FindFirst(ClaimTypes.NameIdentifier);
             return claim?.Value;
         }
 
-        public static string GetUserEmail(this ClaimsPrincipal principal)
+        public static string GetUserEmail(this ClaimsPrincipal Principal)
         {
-            if (principal == null)
+            if (Principal == null)
             {
-                throw new ArgumentException(nameof(principal));
+                throw new ArgumentException(nameof(Principal));
             }
 
-            var claim = principal.FindFirst(ClaimTypes.Email);
+            var claim = Principal.FindFirst(ClaimTypes.Email);
             return claim?.Value;
         }
     }

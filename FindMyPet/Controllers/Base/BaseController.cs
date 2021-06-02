@@ -16,54 +16,54 @@ namespace FindMyPet.Controllers.Base
         private readonly INotificator Notificator;
         public readonly ITokenUser AppUser;
 
-        protected BaseController(INotificator notificador, ITokenUser appUser)
+        protected BaseController(INotificator Notificator, ITokenUser AppUser)
         {
-            Notificator = notificador;
-            AppUser = appUser;
+            this.Notificator = Notificator;
+            this.AppUser = AppUser;
         }
 
         protected bool IsValidOperation()
         {
-            return !Notificator.haveNotification();
+            return !Notificator.HaveNotification();
         }
 
-        protected ActionResult CustomResponse(object result = null)
+        protected ActionResult CustomResponse(object Result = null)
         {
             if (IsValidOperation())
             {
                 return Ok(new
                 {
                     Success = true,
-                    Result = result
+                    Result = Result
                 });
             }
 
             return BadRequest(new
             {
                 Success = false,
-                Errors = Notificator.getNotifications().Select(n => n.Message)
+                Errors = Notificator.GetNotifications().Select(n => n.Message)
             });
         }
 
-        protected ActionResult CustomResponse(ModelStateDictionary modelState)
+        protected ActionResult CustomResponse(ModelStateDictionary ModelState)
         {
-            if (!modelState.IsValid) NotificateErrorModelInvalid(modelState);
+            if (!ModelState.IsValid) NotificateErrorModelInvalid(ModelState);
             return CustomResponse();
         }
 
-        protected void NotificateErrorModelInvalid(ModelStateDictionary modelState)
+        protected void NotificateErrorModelInvalid(ModelStateDictionary ModelState)
         {
-            var Erros = modelState.Values.SelectMany(e => e.Errors);
-            foreach (var Erro in Erros)
+            var Errors = ModelState.Values.SelectMany(e => e.Errors);
+            foreach (var Error in Errors)
             {
-                var ErrorMsg = Erro.Exception == null ? Erro.ErrorMessage : Erro.Exception.Message;
+                var ErrorMsg = Error.Exception == null ? Error.ErrorMessage : Error.Exception.Message;
                 NotificateError(ErrorMsg);
             }
         }
 
-        protected void NotificateError(string message)
+        protected void NotificateError(string Message)
         {
-            Notificator.Handle(new Notification(message));
+            Notificator.Handle(new Notification(Message));
         }
     }
 }

@@ -5,8 +5,8 @@ namespace FindMyPet.Business.Interfaces
 {
     public interface INotificator
     {
-        bool haveNotification();
-        List<Notification> getNotifications();
+        bool HaveNotification();
+        List<Notification> GetNotifications();
         void Handle(Notification notification);
     }
 }

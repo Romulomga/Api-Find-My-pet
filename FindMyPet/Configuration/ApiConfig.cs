@@ -9,64 +9,64 @@ namespace FindMyPet.Configuration
 {
     public static class ApiConfig
     {
-        public static IServiceCollection AddApiConfig(this IServiceCollection services)
+        public static IServiceCollection AddApiConfig(this IServiceCollection Services)
         {
-            services.AddControllers();
+            Services.AddControllers();
 
-            services.AddApiVersioning(options =>
+            Services.AddApiVersioning(Options =>
             {
-                options.AssumeDefaultVersionWhenUnspecified = true;
-                options.DefaultApiVersion = new ApiVersion(1, 0);
-                options.ReportApiVersions = true;
+                Options.AssumeDefaultVersionWhenUnspecified = true;
+                Options.DefaultApiVersion = new ApiVersion(1, 0);
+                Options.ReportApiVersions = true;
             });
 
-            services.AddVersionedApiExplorer(options =>
+            Services.AddVersionedApiExplorer(Options =>
             {
-                options.GroupNameFormat = "'v'VVV";
-                options.SubstituteApiVersionInUrl = true;
+                Options.GroupNameFormat = "'v'VVV";
+                Options.SubstituteApiVersionInUrl = true;
             });
 
-            services.Configure<ApiBehaviorOptions>(options =>
+            Services.Configure<ApiBehaviorOptions>(Options =>
             {
-                options.SuppressModelStateInvalidFilter = true;
+                Options.SuppressModelStateInvalidFilter = true;
             });
 
-            services.AddCors(options =>
+            Services.AddCors(Options =>
             {
-                options.AddPolicy("Development", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-                options.AddPolicy("Production", builder => builder.WithMethods("GET").WithOrigins("http://desenvolvedor.io").SetIsOriginAllowedToAllowWildcardSubdomains().AllowAnyHeader());
+                Options.AddPolicy("Development", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+                Options.AddPolicy("Production", builder => builder.WithMethods("GET").WithOrigins("http://desenvolvedor.io").SetIsOriginAllowedToAllowWildcardSubdomains().AllowAnyHeader());
             });
 
-            return services;
+            return Services;
         }
 
-        public static IApplicationBuilder UseApiConfig(this IApplicationBuilder app, IWebHostEnvironment env)
+        public static IApplicationBuilder UseApiConfig(this IApplicationBuilder App, IWebHostEnvironment Env)
         {
-            if (env.IsDevelopment())
+            if (Env.IsDevelopment())
             {
-                app.UseCors("Development");
-                app.UseDeveloperExceptionPage();
+                App.UseCors("Development");
+                App.UseDeveloperExceptionPage();
             }
             else
             {
-                app.UseCors("Development"); // Usar apenas nas demos => Configuração Ideal: Production
-                app.UseHsts();
+                App.UseCors("Development"); // Usar apenas nas demos => Configuração Ideal: Production
+                App.UseHsts();
             }
 
-            app.UseMiddleware<ExceptionMiddleware>();
-            app.UseHttpsRedirection();
-            app.UseRouting();
-            app.UseAuthentication();
-            app.UseAuthorization();
+            App.UseMiddleware<ExceptionMiddleware>();
+            App.UseHttpsRedirection();
+            App.UseRouting();
+            App.UseAuthentication();
+            App.UseAuthorization();
 
-            app.UseStaticFiles();
+            App.UseStaticFiles();
 
-            app.UseEndpoints(endpoints =>
+            App.UseEndpoints(Endpoints =>
             {
-                endpoints.MapControllers();
+                Endpoints.MapControllers();
             });
 
-            return app;
+            return App;
         }
     }
 }

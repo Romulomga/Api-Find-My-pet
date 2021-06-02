@@ -14,46 +14,46 @@ namespace FindMyPet.Configuration
 {
     public static class IdentityConfig
     {
-        public static IServiceCollection AddIdentityConfig(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddIdentityConfig(this IServiceCollection Services, IConfiguration Configuration)
         {
-            services.AddDbContext<IdentityDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+            Services.AddDbContext<IdentityDbContext>(Options => Options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddIdentity<User, IdentityRole<long>>(options =>
+            Services.AddIdentity<User, IdentityRole<long>>(Options =>
             {
-                options.User.RequireUniqueEmail = true;
-                options.User.AllowedUserNameCharacters = string.Empty;
+                Options.User.RequireUniqueEmail = true;
+                Options.User.AllowedUserNameCharacters = string.Empty;
 
-                options.Password.RequireDigit = false;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequiredLength = 4;
+                Options.Password.RequireDigit = false;
+                Options.Password.RequireNonAlphanumeric = false;
+                Options.Password.RequireLowercase = false;
+                Options.Password.RequireUppercase = false;
+                Options.Password.RequiredLength = 4;
 
-                options.Lockout.MaxFailedAccessAttempts = 3;
-                options.Lockout.AllowedForNewUsers = true;
+                Options.Lockout.MaxFailedAccessAttempts = 3;
+                Options.Lockout.AllowedForNewUsers = true;
 
             }).AddEntityFrameworkStores<IdentityDbContext>()
             .AddErrorDescriber<IdentityMessagesPortuguese>()
             .AddDefaultTokenProviders();
 
             // JWT
-            var jwtSettingsSection = configuration.GetSection(nameof(JwtSettings));
-            var facebookAuthSettingsSection = configuration.GetSection(nameof(FacebookAuthSettings));
+            var JwtSettingsSection = Configuration.GetSection(nameof(JwtSettings));
+            var FacebookAuthSettingsSection = Configuration.GetSection(nameof(FacebookAuthSettings));
 
-            services.Configure<JwtSettings>(jwtSettingsSection);
-            services.Configure<FacebookAuthSettings>(facebookAuthSettingsSection);
+            Services.Configure<JwtSettings>(JwtSettingsSection);
+            Services.Configure<FacebookAuthSettings>(FacebookAuthSettingsSection);
 
-            var jwtSettings = jwtSettingsSection.Get<JwtSettings>();
+            var jwtSettings = JwtSettingsSection.Get<JwtSettings>();
 
-            services.AddAuthentication(x =>
+            Services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options =>
+            }).AddJwtBearer(Options =>
             {
-                options.RequireHttpsMetadata = true;
-                options.SaveToken = true;
-                options.TokenValidationParameters = new TokenValidationParameters
+                Options.RequireHttpsMetadata = true;
+                Options.SaveToken = true;
+                Options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
                     ValidateAudience = true,
@@ -65,7 +65,7 @@ namespace FindMyPet.Configuration
                 };
             });
 
-            return services;
+            return Services;
         }
     }
 }

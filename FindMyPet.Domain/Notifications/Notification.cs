@@ -2,9 +2,9 @@
 {
     public class Notification
     {
-        public Notification(string message)
+        public Notification(string Message)
         {
-            Message = message;
+            this.Message = Message;
         }
 
         public string Message { get; }
