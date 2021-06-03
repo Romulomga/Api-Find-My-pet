@@ -7,6 +7,6 @@ namespace FindMyPet.Business.Interfaces
     {
         bool HaveNotification();
         List<Notification> GetNotifications();
-        void Handle(Notification notification);
+        void Handle(Notification Notification);
     }
 }

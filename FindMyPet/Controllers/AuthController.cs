@@ -112,6 +112,7 @@ namespace FindMyPet.Controllers
 
                     return CustomResponse(await GerarJwt(User));
                 }
+
                 foreach (var error in Result.Errors)
                 {
                     NotificateError(error.Description);
@@ -143,7 +144,7 @@ namespace FindMyPet.Controllers
                 User = new User
                 {
                     UserName = Apple.UserName,
-                    Email = RefreshToken.UserInformation.Email
+                    Email = Apple.Email
                 };
 
                 var Result = await UserManager.CreateAsync(User, Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Substring(0, 8));
@@ -155,6 +156,7 @@ namespace FindMyPet.Controllers
 
                     return CustomResponse(await GerarJwt(User));
                 }
+
                 foreach (var Error in Result.Errors)
                 {
                     NotificateError(Error.Description);

@@ -35,9 +35,9 @@ namespace FindMyPet
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection Services)
         {
-            Services.AddDbContext<MyDbContext>(options =>
+            Services.AddDbContext<MyDbContext>(Options =>
             {
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+                Options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
 
             Services.AddIdentityConfig(Configuration);
@@ -45,12 +45,12 @@ namespace FindMyPet
             Services.AddSwaggerConfig();
             Services.ResolveDependencies();
 
-            var mappingConfig = new MapperConfiguration(mc =>
+            var MappingConfig = new MapperConfiguration(Mc =>
             {
-                mc.AddProfile(new AutomapperConfig());
+                Mc.AddProfile(new AutomapperConfig());
             });
 
-            IMapper Mapper = mappingConfig.CreateMapper();
+            IMapper Mapper = MappingConfig.CreateMapper();
             Services.AddSingleton(Mapper);
         }
 

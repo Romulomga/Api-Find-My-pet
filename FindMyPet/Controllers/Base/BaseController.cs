@@ -34,7 +34,7 @@ namespace FindMyPet.Controllers.Base
                 return Ok(new
                 {
                     Success = true,
-                    Result = Result
+                    Result
                 });
             }
 
