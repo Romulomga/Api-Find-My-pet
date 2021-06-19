@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FindMyPet.Dto;
+using FindMyPet.Dto.Login.Responses;
 using FindMyPet.Models;
 
 namespace FindMyPet.Configuration

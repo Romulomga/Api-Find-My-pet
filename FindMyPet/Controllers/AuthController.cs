@@ -19,6 +19,7 @@ using Newtonsoft.Json;
 using FindMyPet.Models.Facebbok;
 using FindMyPet.Dto.Login;
 using AppleAuth;
+using FindMyPet.Dto.Login.Responses;
 
 namespace FindMyPet.Controllers
 {
@@ -240,6 +241,6 @@ namespace FindMyPet.Controllers
             return Response;
         }
 
-        private static long ToUnixEpochDate(DateTime date) => (long)Math.Round((date.ToUniversalTime() - new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero)).TotalSeconds);
+        private static long ToUnixEpochDate(DateTime Date) => (long)Math.Round((Date.ToUniversalTime() - new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero)).TotalSeconds);
     }
 }

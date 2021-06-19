@@ -28,4 +28,13 @@ namespace FindMyPet.Business.Notifications
             return Notifications.Any();
         }
     }
+    public class Notification
+    {
+        public Notification(string Message)
+        {
+            this.Message = Message;
+        }
+
+        public string Message { get; }
+    }
 }
