@@ -2,7 +2,7 @@
 using System.Linq;
 using FindMyPet.Business.Interfaces;
 
-namespace FindMyPet.Business.Notifications
+namespace FindMyPet.Business.Models
 {
     public class Notificator : INotificator
     {

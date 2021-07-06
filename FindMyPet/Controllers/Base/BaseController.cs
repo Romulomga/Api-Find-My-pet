@@ -1,12 +1,8 @@
 ﻿using FindMyPet.Business.Interfaces;
-using FindMyPet.Business.Notifications;
-using Microsoft.AspNetCore.Http;
+using FindMyPet.Business.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace FindMyPet.Controllers.Base
 {
@@ -14,9 +10,9 @@ namespace FindMyPet.Controllers.Base
     public class BaseController : ControllerBase
     {
         private readonly INotificator Notificator;
-        public readonly ITokenUser AppUser;
+        public readonly IUser AppUser;
 
-        protected BaseController(INotificator Notificator, ITokenUser AppUser)
+        protected BaseController(INotificator Notificator, IUser AppUser)
         {
             this.Notificator = Notificator;
             this.AppUser = AppUser;
@@ -33,14 +29,12 @@ namespace FindMyPet.Controllers.Base
             {
                 return Ok(new
                 {
-                    Success = true,
                     Result
                 });
             }
 
             return BadRequest(new
             {
-                Success = false,
                 Errors = Notificator.GetNotifications().Select(n => n.Message)
             });
         }

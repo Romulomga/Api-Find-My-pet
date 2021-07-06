@@ -1,7 +1,7 @@
 ﻿using FindMyPet.Data;
 using FindMyPet.Extensions;
 using FindMyPet.Helpers;
-using FindMyPet.Models;
+using FindMyPet.Business.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

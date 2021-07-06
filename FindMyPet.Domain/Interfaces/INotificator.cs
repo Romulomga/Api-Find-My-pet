@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using FindMyPet.Business.Notifications;
+using FindMyPet.Business.Models;
 
 namespace FindMyPet.Business.Interfaces
 {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FindMyPet.Models.Facebbok
+namespace FindMyPet.Business.Models
 {
     public class FacebookUserData
     {
@@ -34,6 +34,10 @@ namespace FindMyPet.Models.Facebbok
         public string Url { get; set; }
     }
 
+    public class FacebookUserAccessTokenValidation
+    {
+        public FacebookUserAccessTokenData Data { get; set; }
+    }
     public class FacebookUserAccessTokenData
     {
         [JsonProperty("app_id")]
@@ -46,11 +50,6 @@ namespace FindMyPet.Models.Facebbok
         public bool IsValid { get; set; }
         [JsonProperty("user_id")]
         public long UserId { get; set; }
-    }
-
-    public class FacebookUserAccessTokenValidation
-    {
-        public FacebookUserAccessTokenData Data { get; set; }
     }
 
     public class FacebookAppAccessToken

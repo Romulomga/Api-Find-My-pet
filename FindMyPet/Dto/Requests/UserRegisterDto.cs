@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace FindMyPet.Dto
+namespace FindMyPet.Dto.Requests
 {
     public class UserRegisterDto
     {

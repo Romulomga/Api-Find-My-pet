@@ -8,18 +8,16 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using FindMyPet.Dto;
 using FindMyPet.Controllers.Base;
 using FindMyPet.Business.Interfaces;
-using FindMyPet.Models;
+using FindMyPet.Business.Models;
 using FindMyPet.Helpers;
 using Microsoft.Extensions.Options;
 using System.Net.Http;
 using Newtonsoft.Json;
-using FindMyPet.Models.Facebbok;
-using FindMyPet.Dto.Login;
 using AppleAuth;
-using FindMyPet.Dto.Login.Responses;
+using FindMyPet.Dto.Requests;
+using FindMyPet.Dto.Responses;
 
 namespace FindMyPet.Controllers
 {
@@ -33,7 +31,7 @@ namespace FindMyPet.Controllers
         private readonly JwtSettings JwtSettings;
         private readonly FacebookAuthSettings FacebookAuthSettings;
 
-        public AuthController(INotificator Notificator, UserManager<User> UserManager, SignInManager<User> SignInManager, IMapper Mapper, ITokenUser User, IOptions<JwtSettings> JwtSettings, IOptions<FacebookAuthSettings> FacebookAuthSettings) : base(Notificator, User)
+        public AuthController(INotificator Notificator, UserManager<User> UserManager, SignInManager<User> SignInManager, IMapper Mapper, IUser User, IOptions<JwtSettings> JwtSettings, IOptions<FacebookAuthSettings> FacebookAuthSettings) : base(Notificator, User)
         {
             this.UserManager = UserManager;
             this.SignInManager = SignInManager;

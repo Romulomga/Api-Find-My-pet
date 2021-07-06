@@ -5,11 +5,8 @@ using System.Text;
 
 namespace FindMyPet.Business.Interfaces
 {
-    public interface ITokenUser
+    public interface IUser
     {
-        string Name { get; }
-        long? GetUserId();
-        string? GetUserEmail();
-        bool IsAuthenticated();
+        long GetUserId();
     }
 }
