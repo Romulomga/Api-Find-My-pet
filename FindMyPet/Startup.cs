@@ -16,49 +16,49 @@ namespace FindMyPet
     {
         public IConfiguration Configuration { get; }
 
-        public Startup(IHostEnvironment HostEnvironment)
+        public Startup(IHostEnvironment hostEnvironment)
         {
-            var Builder = new ConfigurationBuilder()
-                .SetBasePath(HostEnvironment.ContentRootPath)
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(hostEnvironment.ContentRootPath)
                 .AddJsonFile("appsettings.json", true, true)
-                .AddJsonFile($"appsettings.{HostEnvironment.EnvironmentName}.json", true, true)
+                .AddJsonFile($"appsettings.{hostEnvironment.EnvironmentName}.json", true, true)
                 .AddEnvironmentVariables();
 
-            if (HostEnvironment.IsProduction())
+            if (hostEnvironment.IsProduction())
             {
-                Builder.AddUserSecrets<Startup>();
+                builder.AddUserSecrets<Startup>();
             }
 
-            Configuration = Builder.Build();
+            this.Configuration = builder.Build();
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection Services)
+        public void ConfigureServices(IServiceCollection services)
         {
-            Services.AddDbContext<MyDbContext>(Options =>
+            services.AddDbContext<MyDbContext>(options =>
             {
-                Options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
 
-            Services.AddIdentityConfig(Configuration);
-            Services.AddApiConfig();
-            Services.AddSwaggerConfig();
-            Services.ResolveDependencies();
+            services.AddIdentityConfig(Configuration);
+            services.AddApiConfig();
+            services.AddSwaggerConfig();
+            services.ResolveDependencies();
 
-            var MappingConfig = new MapperConfiguration(Mc =>
+            var mappingConfig = new MapperConfiguration(mc =>
             {
-                Mc.AddProfile(new AutomapperConfig());
+                mc.AddProfile(new AutomapperConfig());
             });
 
-            IMapper Mapper = MappingConfig.CreateMapper();
-            Services.AddSingleton(Mapper);
+            IMapper mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder App, IWebHostEnvironment Env, IApiVersionDescriptionProvider Provider)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider)
         {
-            App.UseApiConfig(Env);
-            App.UseSwaggerConfig(Provider);
+            app.UseApiConfig(env);
+            app.UseSwaggerConfig(provider);
         }
     }
 }

@@ -9,51 +9,52 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using System;
 
 namespace FindMyPet.Configuration
 {
     public static class IdentityConfig
     {
-        public static IServiceCollection AddIdentityConfig(this IServiceCollection Services, IConfiguration Configuration)
+        public static IServiceCollection AddIdentityConfig(this IServiceCollection services, IConfiguration configuration)
         {
-            Services.AddDbContext<IdentityDbContext>(Options => Options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<IdentityDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
-            Services.AddIdentity<User, IdentityRole<long>>(Options =>
+            services.AddIdentity<User, IdentityRole<Guid>>(options =>
             {
-                Options.User.RequireUniqueEmail = true;
-                Options.User.AllowedUserNameCharacters = string.Empty;
+                options.User.RequireUniqueEmail = true;
+                options.User.AllowedUserNameCharacters = string.Empty;
 
-                Options.Password.RequireDigit = false;
-                Options.Password.RequireNonAlphanumeric = false;
-                Options.Password.RequireLowercase = false;
-                Options.Password.RequireUppercase = false;
-                Options.Password.RequiredLength = 4;
+                options.Password.RequireDigit = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequiredLength = 4;
 
-                Options.Lockout.MaxFailedAccessAttempts = 3;
-                Options.Lockout.AllowedForNewUsers = true;
+                options.Lockout.MaxFailedAccessAttempts = 3;
+                options.Lockout.AllowedForNewUsers = true;
 
             }).AddEntityFrameworkStores<IdentityDbContext>()
             .AddErrorDescriber<IdentityMessagesPortuguese>()
             .AddDefaultTokenProviders();
 
             // JWT
-            var JwtSettingsSection = Configuration.GetSection(nameof(JwtSettings));
-            var FacebookAuthSettingsSection = Configuration.GetSection(nameof(FacebookAuthSettings));
+            var jwtSettingsSection = configuration.GetSection(nameof(JwtSettings));
+            var facebookAuthSettingsSection = configuration.GetSection(nameof(FacebookAuthSettings));
 
-            Services.Configure<JwtSettings>(JwtSettingsSection);
-            Services.Configure<FacebookAuthSettings>(FacebookAuthSettingsSection);
+            services.Configure<JwtSettings>(jwtSettingsSection);
+            services.Configure<FacebookAuthSettings>(facebookAuthSettingsSection);
 
-            var jwtSettings = JwtSettingsSection.Get<JwtSettings>();
+            var jwtSettings = jwtSettingsSection.Get<JwtSettings>();
 
-            Services.AddAuthentication(x =>
+            services.AddAuthentication(x =>
             {
                 x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(Options =>
+            }).AddJwtBearer(options =>
             {
-                Options.RequireHttpsMetadata = true;
-                Options.SaveToken = true;
-                Options.TokenValidationParameters = new TokenValidationParameters
+                options.RequireHttpsMetadata = true;
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
                     ValidateAudience = true,
@@ -65,7 +66,7 @@ namespace FindMyPet.Configuration
                 };
             });
 
-            return Services;
+            return services;
         }
     }
 }

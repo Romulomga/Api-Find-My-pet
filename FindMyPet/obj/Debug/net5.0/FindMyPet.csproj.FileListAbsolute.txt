@@ -73,7 +73,6 @@ C:\Users\Rômulo Monteiro\Desktop\Api Find My pet\FindMyPet\bin\Debug\net5.0\Mic
 C:\Users\Rômulo Monteiro\Desktop\Api Find My pet\FindMyPet\bin\Debug\net5.0\FindMyPet.Domain.pdb
 C:\Users\Rômulo Monteiro\Desktop\Api Find My pet\FindMyPet\bin\Debug\net5.0\FindMyPet.Repository.pdb
 C:\Users\Rômulo Monteiro\Desktop\Api Find My pet\FindMyPet\bin\Debug\net5.0\AutoMapper.dll
-C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet\obj\Debug\net5.0\FindMyPet.csprojAssemblyReference.cache
 C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet\obj\Debug\net5.0\FindMyPet.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet\obj\Debug\net5.0\FindMyPet.AssemblyInfoInputs.cache
 C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet\obj\Debug\net5.0\FindMyPet.AssemblyInfo.cs
@@ -149,3 +148,4 @@ C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet\bin\Debug\net5.0\Humanizer.d
 C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet\bin\Debug\net5.0\Microsoft.EntityFrameworkCore.Design.dll
 C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet\bin\Debug\net5.0\AppleAuth.dll
 C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet\bin\Debug\net5.0\Newtonsoft.Json.dll
+C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet\obj\Debug\net5.0\FindMyPet.csproj.AssemblyReference.cache

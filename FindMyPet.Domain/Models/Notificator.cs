@@ -7,15 +7,15 @@ namespace FindMyPet.Business.Models
     public class Notificator : INotificator
     {
         private readonly List<Notification> Notifications;
-
+        
         public Notificator()
         {
             Notifications = new List<Notification>();
         }
 
-        public void Handle(Notification Notification)
+        public void Handle(Notification notification)
         {
-            Notifications.Add(Notification);
+            Notifications.Add(notification);
         }
 
         public List<Notification> GetNotifications()
@@ -30,9 +30,9 @@ namespace FindMyPet.Business.Models
     }
     public class Notification
     {
-        public Notification(string Message)
+        public Notification(string message)
         {
-            this.Message = Message;
+            this.Message = message;
         }
 
         public string Message { get; }

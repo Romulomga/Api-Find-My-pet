@@ -10,7 +10,6 @@ C:\Users\Rômulo Monteiro\Desktop\Api Find My pet\FindMyPet.Repository\obj\Debug
 C:\Users\Rômulo Monteiro\Desktop\Api Find My pet\FindMyPet.Repository\obj\Debug\netcoreapp3.1\FindMyPet.Repository.csproj.CopyComplete
 C:\Users\Rômulo Monteiro\Desktop\Api Find My pet\FindMyPet.Repository\obj\Debug\netcoreapp3.1\FindMyPet.Repository.dll
 C:\Users\Rômulo Monteiro\Desktop\Api Find My pet\FindMyPet.Repository\obj\Debug\netcoreapp3.1\FindMyPet.Repository.pdb
-C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet.Repository\obj\Debug\netcoreapp3.1\FindMyPet.Repository.csprojAssemblyReference.cache
 C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet.Repository\obj\Debug\netcoreapp3.1\FindMyPet.Repository.AssemblyInfoInputs.cache
 C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet.Repository\obj\Debug\netcoreapp3.1\FindMyPet.Repository.AssemblyInfo.cs
 C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet.Repository\obj\Debug\netcoreapp3.1\FindMyPet.Repository.csproj.CoreCompileInputs.cache
@@ -22,3 +21,4 @@ C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet.Repository\bin\Debug\netcore
 C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet.Repository\bin\Debug\netcoreapp3.1\FindMyPet.Business.dll
 C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet.Repository\bin\Debug\netcoreapp3.1\FindMyPet.Business.pdb
 C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet.Repository\obj\Debug\netcoreapp3.1\FindMyPet.Repository.csproj.CopyComplete
+C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet.Repository\obj\Debug\netcoreapp3.1\FindMyPet.Repository.csproj.AssemblyReference.cache

@@ -31,32 +31,32 @@ namespace FindMyPet.Controllers
         private readonly JwtSettings JwtSettings;
         private readonly FacebookAuthSettings FacebookAuthSettings;
 
-        public AuthController(INotificator Notificator, UserManager<User> UserManager, SignInManager<User> SignInManager, IMapper Mapper, IUser User, IOptions<JwtSettings> JwtSettings, IOptions<FacebookAuthSettings> FacebookAuthSettings) : base(Notificator, User)
+        public AuthController(INotificator notificator, UserManager<User> userManager, SignInManager<User> signInManager, IMapper mapper, IJwtUser user, IOptions<JwtSettings> jwtSettings, IOptions<FacebookAuthSettings> facebookAuthSettings) : base(notificator, user)
         {
-            this.UserManager = UserManager;
-            this.SignInManager = SignInManager;
-            this.Mapper = Mapper;
-            this.JwtSettings = JwtSettings.Value;
-            this.FacebookAuthSettings = FacebookAuthSettings.Value;
+            this.UserManager = userManager;
+            this.SignInManager = signInManager;
+            this.Mapper = mapper;
+            this.JwtSettings = jwtSettings.Value;
+            this.FacebookAuthSettings = facebookAuthSettings.Value;
         }
 
         [HttpPost("login")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(UserLoginDto UserLogin)
+        public async Task<IActionResult> Login(UserLoginDto userLogin)
         {
             if (!ModelState.IsValid) return CustomResponse(ModelState);
 
-            var User = await UserManager.FindByEmailAsync(UserLogin.Email);
+            var user = await UserManager.FindByEmailAsync(userLogin.Email);
 
             if (User != null)
             {
-                var Result = await SignInManager.PasswordSignInAsync(User, UserLogin.Password, false, true);
+                var result = await SignInManager.PasswordSignInAsync(user, userLogin.Password, false, true);
 
-                if (Result.Succeeded)
+                if (result.Succeeded)
                 {
-                    return CustomResponse(await GerarJwt(User));
+                    return CustomResponse(await GerarJwt(user));
                 }
-                if (Result.IsLockedOut)
+                if (result.IsLockedOut)
                 {
                     NotificateError("Usuário temporariamente bloqueado por tentativas inválidas");
                     return CustomResponse();
@@ -69,50 +69,50 @@ namespace FindMyPet.Controllers
 
         [HttpPost("login/facebook")]
         [AllowAnonymous]
-        public async Task<IActionResult> Facebook(SocialLoginDto Facebook)
+        public async Task<IActionResult> Facebook(SocialLoginDto facebook)
         {
             if (!ModelState.IsValid) return CustomResponse(ModelState);
 
             // 1.generate an app access token
-            var AppAccessTokenResponse = await new HttpClient().GetStringAsync($"https://graph.facebook.com/oauth/access_token?client_id={FacebookAuthSettings.AppId}&client_secret={FacebookAuthSettings.AppSecret}&grant_type=client_credentials");
-            var AppAccessToken = JsonConvert.DeserializeObject<FacebookAppAccessToken>(AppAccessTokenResponse);
+            var appAccessTokenResponse = await new HttpClient().GetStringAsync($"https://graph.facebook.com/oauth/access_token?client_id={FacebookAuthSettings.AppId}&client_secret={FacebookAuthSettings.AppSecret}&grant_type=client_credentials");
+            var appAccessToken = JsonConvert.DeserializeObject<FacebookAppAccessToken>(appAccessTokenResponse);
             // 2. validate the user access token
-            var UserAccessTokenValidationResponse = await new HttpClient().GetStringAsync($"https://graph.facebook.com/debug_token?input_token={Facebook.AccessToken}&access_token={AppAccessToken.AccessToken}");
-            var UserAccessTokenValidation = JsonConvert.DeserializeObject<FacebookUserAccessTokenValidation>(UserAccessTokenValidationResponse);
+            var userAccessTokenValidationResponse = await new HttpClient().GetStringAsync($"https://graph.facebook.com/debug_token?input_token={facebook.AccessToken}&access_token={appAccessToken.AccessToken}");
+            var userAccessTokenValidation = JsonConvert.DeserializeObject<FacebookUserAccessTokenValidation>(userAccessTokenValidationResponse);
 
-            if (!UserAccessTokenValidation.Data.IsValid)
+            if (!userAccessTokenValidation.Data.IsValid)
             {
                 NotificateError("Token inválido.");
                 return CustomResponse();
             }
 
             // 3. we've got a valid token so we can request user data from fb
-            var UserInfoResponse = await new HttpClient().GetStringAsync($"https://graph.facebook.com/v10.0/me?fields=id,email,name,picture&access_token={Facebook.AccessToken}");
-            var UserInfo = JsonConvert.DeserializeObject<FacebookUserData>(UserInfoResponse);
+            var userInfoResponse = await new HttpClient().GetStringAsync($"https://graph.facebook.com/v10.0/me?fields=id,email,name,picture&access_token={facebook.AccessToken}");
+            var userInfo = JsonConvert.DeserializeObject<FacebookUserData>(userInfoResponse);
 
             // 4. ready to create the local user account (if necessary) and jwt
-            var User = await UserManager.FindByEmailAsync(UserInfo.Email);
+            var user = await UserManager.FindByEmailAsync(userInfo.Email);
 
-            if (User == null)
+            if (user == null)
             {
-                User = new User
+                user = new User
                 {
-                    UserName = UserInfo.Name,
-                    Email = UserInfo.Email,
-                    AvatarUrl = UserInfo.Picture.Data.Url
+                    UserName = userInfo.Name,
+                    Email = userInfo.Email,
+                    AvatarUrl = userInfo.Picture.Data.Url
                 };
 
-                var Result = await UserManager.CreateAsync(User, Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Substring(0, 8));
+                var result = await UserManager.CreateAsync(user, Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Substring(0, 8));
 
-                if (Result.Succeeded)
+                if (result.Succeeded)
                 {
-                    User = await UserManager.FindByEmailAsync(User.Email);
-                    await SignInManager.SignInAsync(User, false);
+                    user = await UserManager.FindByEmailAsync(user.Email);
+                    await SignInManager.SignInAsync(user, false);
 
-                    return CustomResponse(await GerarJwt(User));
+                    return CustomResponse(await GerarJwt(user));
                 }
 
-                foreach (var error in Result.Errors)
+                foreach (var error in result.Errors)
                 {
                     NotificateError(error.Description);
                 }
@@ -120,123 +120,123 @@ namespace FindMyPet.Controllers
                 return CustomResponse();
             }
 
-            await SignInManager.SignInAsync(User, false);
+            await SignInManager.SignInAsync(user, false);
 
-            return CustomResponse(await GerarJwt(User));
+            return CustomResponse(await GerarJwt(user));
         }
 
         [HttpPost("login/apple")]
         [AllowAnonymous]
-        public async Task<IActionResult> Apple(SocialLoginDto Apple)
+        public async Task<IActionResult> Apple(SocialLoginDto apple)
         {
             if (!ModelState.IsValid) return CustomResponse(ModelState);
 
-            var PrivateKey = System.IO.File.ReadAllText("path/to/file.p8");
-            var Provider = new AppleAuthProvider("MyClientID", "MyTeamID", "MyKeyID", "https://myredirecturl.com/HandleResponseFromApple", "SomeState");
+            var privateKey = System.IO.File.ReadAllText("path/to/file.p8");
+            var provider = new AppleAuthProvider("MyClientID", "MyTeamID", "MyKeyID", "https://myredirecturl.com/HandleResponseFromApple", "SomeState");
 
-            var RefreshToken = await Provider.GetRefreshToken(Apple.AccessToken, PrivateKey);
+            var refreshToken = await provider.GetRefreshToken(apple.AccessToken, privateKey);
 
-            var User = await UserManager.FindByEmailAsync(RefreshToken.UserInformation.Email);
+            var user = await UserManager.FindByEmailAsync(refreshToken.UserInformation.Email);
 
-            if (User == null)
+            if (user == null)
             {
-                User = new User
+                user = new User
                 {
-                    UserName = Apple.UserName,
-                    Email = Apple.Email
+                    UserName = apple.UserName,
+                    Email = apple.Email
                 };
 
-                var Result = await UserManager.CreateAsync(User, Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Substring(0, 8));
+                var result = await UserManager.CreateAsync(user, Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Substring(0, 8));
 
-                if (Result.Succeeded)
+                if (result.Succeeded)
                 {
-                    User = await UserManager.FindByEmailAsync(User.Email);
-                    await SignInManager.SignInAsync(User, false);
+                    user = await UserManager.FindByEmailAsync(user.Email);
+                    await SignInManager.SignInAsync(user, false);
 
-                    return CustomResponse(await GerarJwt(User));
+                    return CustomResponse(await GerarJwt(user));
                 }
 
-                foreach (var Error in Result.Errors)
+                foreach (var error in result.Errors)
                 {
-                    NotificateError(Error.Description);
+                    NotificateError(error.Description);
                 }
 
                 return CustomResponse();
             }
 
-            await SignInManager.SignInAsync(User, false);
+            await SignInManager.SignInAsync(user, false);
 
-            return CustomResponse(await GerarJwt(User));
+            return CustomResponse(await GerarJwt(user));
         }
 
         [HttpPost("register")]
         [AllowAnonymous]
-        public async Task<IActionResult> Register(UserRegisterDto UserRegisterDto)
+        public async Task<IActionResult> Register(UserRegisterDto userRegisterDto)
         {
             if (!ModelState.IsValid) return CustomResponse(ModelState);
 
-            var User = new User
+            var user = new User
             {
-                UserName = UserRegisterDto.UserName,
-                Email = UserRegisterDto.Email
+                UserName = userRegisterDto.UserName,
+                Email = userRegisterDto.Email
             };
 
-            var Result = await UserManager.CreateAsync(User, UserRegisterDto.Password);
+            var result = await UserManager.CreateAsync(user, userRegisterDto.Password);
 
-            if (Result.Succeeded)
+            if (result.Succeeded)
             {
-                User = await UserManager.FindByEmailAsync(User.Email);
-                await SignInManager.SignInAsync(User, false);
+                user = await UserManager.FindByEmailAsync(user.Email);
+                await SignInManager.SignInAsync(user, false);
 
-                return CustomResponse(await GerarJwt(User));
+                return CustomResponse(await GerarJwt(user));
             }
-            foreach (var Error in Result.Errors)
+            foreach (var error in result.Errors)
             {
-                NotificateError(Error.Description);
+                NotificateError(error.Description);
             }
 
             return CustomResponse();
         }
 
-        private async Task<UserLoginResponseDto> GerarJwt(User User)
+        private async Task<UserLoginResponseDto> GerarJwt(User user)
         {
-            var Claims = await UserManager.GetClaimsAsync(User);
-            var UserRoles = await UserManager.GetRolesAsync(User);
+            var claims = await UserManager.GetClaimsAsync(user);
+            var userRoles = await UserManager.GetRolesAsync(user);
 
-            Claims.Add(new Claim(JwtRegisteredClaimNames.Sub, User.Id.ToString()));
-            Claims.Add(new Claim(JwtRegisteredClaimNames.Email, User.Email));
-            Claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
-            Claims.Add(new Claim(JwtRegisteredClaimNames.Nbf, ToUnixEpochDate(DateTime.UtcNow).ToString()));
-            Claims.Add(new Claim(JwtRegisteredClaimNames.Iat, ToUnixEpochDate(DateTime.UtcNow).ToString(), ClaimValueTypes.Integer64));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Email, user.Email));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Nbf, ToUnixEpochDate(DateTime.UtcNow).ToString()));
+            claims.Add(new Claim(JwtRegisteredClaimNames.Iat, ToUnixEpochDate(DateTime.UtcNow).ToString(), ClaimValueTypes.Integer64));
 
-            foreach (var userRole in UserRoles)
+            foreach (var userRole in userRoles)
             {
-                Claims.Add(new Claim("role", userRole));
+                claims.Add(new Claim("role", userRole));
             }
 
-            var IdentityClaims = new ClaimsIdentity();
-            IdentityClaims.AddClaims(Claims);
+            var identityClaims = new ClaimsIdentity();
+            identityClaims.AddClaims(claims);
 
-            var TokenHandler = new JwtSecurityTokenHandler();
-            var Key = Encoding.ASCII.GetBytes(JwtSettings.Secret);
-            var Token = TokenHandler.CreateToken(new SecurityTokenDescriptor
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(JwtSettings.Secret);
+            var token = tokenHandler.CreateToken(new SecurityTokenDescriptor
             {
                 Issuer = JwtSettings.Issuer,
                 Audience = JwtSettings.Audience,
-                Subject = IdentityClaims,
+                Subject = identityClaims,
                 Expires = DateTime.UtcNow.AddHours(JwtSettings.ExpirationHours),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(Key), SecurityAlgorithms.HmacSha256Signature)
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             });
 
-            var EncodedToken = TokenHandler.WriteToken(Token);
+            var encodedToken = tokenHandler.WriteToken(token);
 
-            var Response = new UserLoginResponseDto
+            var response = new UserLoginResponseDto
             {
-                Token = EncodedToken,
+                Token = encodedToken,
                 User = Mapper.Map<UserDto>(User)
             };
 
-            return Response;
+            return response;
         }
 
         private static long ToUnixEpochDate(DateTime Date) => (long)Math.Round((Date.ToUniversalTime() - new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero)).TotalSeconds);

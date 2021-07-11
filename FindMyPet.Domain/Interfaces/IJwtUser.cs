@@ -5,8 +5,8 @@ using System.Text;
 
 namespace FindMyPet.Business.Interfaces
 {
-    public interface IUser
+    public interface IJwtUser
     {
-        long GetUserId();
+        Guid GetUserId();
     }
 }

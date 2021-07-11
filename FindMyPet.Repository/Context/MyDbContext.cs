@@ -7,6 +7,6 @@ namespace FindMyPet.Repository.Context
 {
     public class MyDbContext : DbContext
     {
-        public MyDbContext(DbContextOptions<MyDbContext> Options) : base(Options) { }
+        public MyDbContext(DbContextOptions<MyDbContext> options) : base(options) { }
     }
 }

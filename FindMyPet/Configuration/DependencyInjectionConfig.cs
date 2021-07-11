@@ -14,17 +14,17 @@ namespace FindMyPet.Configuration
 {
     public static class DependencyInjectionConfig {
 
-        public static IServiceCollection ResolveDependencies(this IServiceCollection Services)
+        public static IServiceCollection ResolveDependencies(this IServiceCollection services)
         {
-            Services.AddScoped<MyDbContext>();
+            services.AddScoped<MyDbContext>();
 
-            Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            Services.AddScoped<IUser, User>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddScoped<IJwtUser, JwtUser>();
 
-            Services.AddScoped<INotificator, Notificator>();
-            Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+            services.AddScoped<INotificator, Notificator>();
+            services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 
-            return Services;
+            return services;
         }
     }
 }

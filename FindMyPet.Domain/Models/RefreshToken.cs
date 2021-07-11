@@ -4,7 +4,7 @@ using System.Text;
 
 namespace FindMyPet.Business.Models
 {
-    class RefreshToken
+    public class RefreshToken
     {
         public RefreshToken()
         {
@@ -13,7 +13,7 @@ namespace FindMyPet.Business.Models
         }
 
         public Guid Id { get; set; }
-        public string Username { get; set; }
+        public string Email { get; set; }
         public Guid Token { get; set; }
         public DateTime ExpirationDate { get; set; }
     }

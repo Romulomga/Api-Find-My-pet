@@ -11,27 +11,27 @@ namespace FindMyPet.Extensions
     {
         private readonly RequestDelegate Next;
 
-        public ExceptionMiddleware(RequestDelegate Next)
+        public ExceptionMiddleware(RequestDelegate next)
         {
-            this.Next = Next;
+            this.Next = next;
         }
 
-        public async Task InvokeAsync(HttpContext HttpContext)
+        public async Task InvokeAsync(HttpContext httpContext)
         {
             try
             {
-                await Next(HttpContext);
+                await Next(httpContext);
             }
             catch (Exception ex)
             {
-                HandleExceptionAsync(HttpContext, ex);
+                HandleExceptionAsync(httpContext, ex);
             }
         }
 
-        private static void HandleExceptionAsync(HttpContext Context, Exception Exception)
+        private static void HandleExceptionAsync(HttpContext context, Exception exception)
         {
             //exception.Ship(context);
-            Context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
         }
     }
 }

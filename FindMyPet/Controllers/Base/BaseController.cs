@@ -10,12 +10,12 @@ namespace FindMyPet.Controllers.Base
     public class BaseController : ControllerBase
     {
         private readonly INotificator Notificator;
-        public readonly IUser AppUser;
+        public readonly IJwtUser AppUser;
 
-        protected BaseController(INotificator Notificator, IUser AppUser)
+        protected BaseController(INotificator notificator, IJwtUser appUser)
         {
-            this.Notificator = Notificator;
-            this.AppUser = AppUser;
+            this.Notificator = notificator;
+            this.AppUser = appUser;
         }
 
         protected bool IsValidOperation()
@@ -23,13 +23,13 @@ namespace FindMyPet.Controllers.Base
             return !Notificator.HaveNotification();
         }
 
-        protected ActionResult CustomResponse(object Result = null)
+        protected ActionResult CustomResponse(object result = null)
         {
             if (IsValidOperation())
             {
                 return Ok(new
                 {
-                    Result
+                    result
                 });
             }
 
@@ -39,25 +39,25 @@ namespace FindMyPet.Controllers.Base
             });
         }
 
-        protected ActionResult CustomResponse(ModelStateDictionary ModelState)
+        protected ActionResult CustomResponse(ModelStateDictionary modelState)
         {
-            if (!ModelState.IsValid) NotificateErrorModelInvalid(ModelState);
+            if (!modelState.IsValid) NotificateErrorModelInvalid(modelState);
             return CustomResponse();
         }
 
-        protected void NotificateErrorModelInvalid(ModelStateDictionary ModelState)
+        protected void NotificateErrorModelInvalid(ModelStateDictionary modelState)
         {
-            var Errors = ModelState.Values.SelectMany(e => e.Errors);
-            foreach (var Error in Errors)
+            var errors = modelState.Values.SelectMany(e => e.Errors);
+            foreach (var error in errors)
             {
-                var ErrorMsg = Error.Exception == null ? Error.ErrorMessage : Error.Exception.Message;
-                NotificateError(ErrorMsg);
+                var errorMsg = error.Exception == null ? error.ErrorMessage : error.Exception.Message;
+                NotificateError(errorMsg);
             }
         }
 
-        protected void NotificateError(string Message)
+        protected void NotificateError(string message)
         {
-            Notificator.Handle(new Notification(Message));
+            Notificator.Handle(new Notification(message));
         }
     }
 }

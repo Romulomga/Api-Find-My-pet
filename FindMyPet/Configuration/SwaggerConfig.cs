@@ -15,13 +15,13 @@ namespace FindMyPet.Configuration
 {
     public static class SwaggerConfig
     {
-        public static IServiceCollection AddSwaggerConfig(this IServiceCollection Services)
+        public static IServiceCollection AddSwaggerConfig(this IServiceCollection services)
         {
-            Services.AddSwaggerGen(C =>
+            services.AddSwaggerGen(ca =>
             {
-                C.OperationFilter<SwaggerDefaultValues>();
+                ca.OperationFilter<SwaggerDefaultValues>();
 
-                C.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                ca.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Description = "Insira o token JWT desta maneira: Bearer {seu token}",
                     Name = "Authorization",
@@ -31,7 +31,7 @@ namespace FindMyPet.Configuration
                     Type = SecuritySchemeType.ApiKey
                 });
 
-                C.AddSecurityRequirement(new OpenApiSecurityRequirement
+                ca.AddSecurityRequirement(new OpenApiSecurityRequirement
                 {
                     {
                         new OpenApiSecurityScheme
@@ -47,23 +47,23 @@ namespace FindMyPet.Configuration
                 });
             });
 
-            return Services;
+            return services;
         }
 
-        public static IApplicationBuilder UseSwaggerConfig(this IApplicationBuilder App, IApiVersionDescriptionProvider Provider)
+        public static IApplicationBuilder UseSwaggerConfig(this IApplicationBuilder app, IApiVersionDescriptionProvider provider)
         {
             //app.UseMiddleware<SwaggerAuthorizedMiddleware>();
-            App.UseSwagger();
-            App.UseSwaggerUI(
+            app.UseSwagger();
+            app.UseSwaggerUI(
                 Options =>
                 {
-                    foreach (var Description in Provider.ApiVersionDescriptions)
+                    foreach (var description in provider.ApiVersionDescriptions)
                     {
-                        Options.SwaggerEndpoint($"/swagger/{Description.GroupName}/swagger.json", Description.GroupName.ToUpperInvariant());
+                        Options.SwaggerEndpoint($"/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
                     }
                 });
 
-            return App;
+            return app;
         }
     }
 
@@ -71,71 +71,71 @@ namespace FindMyPet.Configuration
     {
         readonly IApiVersionDescriptionProvider Provider;
 
-        public ConfigureSwaggerOptions(IApiVersionDescriptionProvider Provider) => this.Provider = Provider;
+        public ConfigureSwaggerOptions(IApiVersionDescriptionProvider provider) => this.Provider = provider;
 
-        public void Configure(SwaggerGenOptions Options)
+        public void Configure(SwaggerGenOptions options)
         {
-            foreach (var Description in Provider.ApiVersionDescriptions)
+            foreach (var description in Provider.ApiVersionDescriptions)
             {
-                Options.SwaggerDoc(Description.GroupName, CreateInfoForApiVersion(Description));
+                options.SwaggerDoc(description.GroupName, CreateInfoForApiVersion(description));
             }
         }
 
-        static OpenApiInfo CreateInfoForApiVersion(ApiVersionDescription Description)
+        static OpenApiInfo CreateInfoForApiVersion(ApiVersionDescription description)
         {
-            var Info = new OpenApiInfo()
+            var info = new OpenApiInfo()
             {
                 Title = "API - Find My Pets",
-                Version = Description.ApiVersion.ToString(),
+                Version = description.ApiVersion.ToString(),
                 Description = "Esta API foi feita como achados e perdidos e animais.",
                 Contact = new OpenApiContact() { Name = "Rômulo Monteiro", Email = "rm.abrahao@gmail.com" },
                 License = new OpenApiLicense() { Name = "MIT", Url = new Uri("https://opensource.org/licenses/MIT") }
             };
 
-            if (Description.IsDeprecated)
+            if (description.IsDeprecated)
             {
-                Info.Description += " Esta versão está obsoleta!";
+                info.Description += " Esta versão está obsoleta!";
             }
 
-            return Info;
+            return info;
         }
     }
 
     public class SwaggerDefaultValues : IOperationFilter
     {
-        public void Apply(OpenApiOperation Operation, OperationFilterContext Context)
+        public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
-            if (Operation.Parameters == null)
+            if (operation.Parameters == null)
             {
                 return;
             }
 
-            foreach (var Parameter in Operation.Parameters)
+            foreach (var parameter in operation.Parameters)
             {
-                var Description = Context.ApiDescription
+                var description = context.ApiDescription
                     .ParameterDescriptions
-                    .First(p => p.Name == Parameter.Name);
+                    .First(p => p.Name == parameter.Name);
 
-                var RouteInfo = Description.RouteInfo;
+                var routeInfo = description.RouteInfo;
 
-                Operation.Deprecated = OpenApiOperation.DeprecatedDefault;
+                operation.Deprecated = OpenApiOperation.DeprecatedDefault;
 
-                if (Parameter.Description == null)
+                if (parameter.Description == null)
                 {
-                    Parameter.Description = Description.ModelMetadata?.Description;
+                    parameter.Description = description.ModelMetadata?.Description;
                 }
 
-                if (RouteInfo == null)
+                if (routeInfo == null)
                 {
                     continue;
                 }
 
-                if (Parameter.In != ParameterLocation.Path && Parameter.Schema.Default == null)
+                if (parameter.In != ParameterLocation.Path && parameter.Schema.Default == null)
                 {
-                    Parameter.Schema.Default = new OpenApiString(RouteInfo.DefaultValue.ToString());
+                    parameter.Schema.Default = new OpenApiString(routeInfo.DefaultValue.ToString());
                 }
 
-                Parameter.Required |= !RouteInfo.IsOptional;
+                parameter.Required |= !routeInfo.IsOptional;
             }
         }
     }
@@ -144,21 +144,21 @@ namespace FindMyPet.Configuration
     {
         private readonly RequestDelegate Next;
 
-        public SwaggerAuthorizedMiddleware(RequestDelegate Next)
+        public SwaggerAuthorizedMiddleware(RequestDelegate next)
         {
-            this.Next = Next;
+            this.Next = next;
         }
 
-        public async Task Invoke(HttpContext Context)
+        public async Task Invoke(HttpContext context)
         {
-            if (Context.Request.Path.StartsWithSegments("/swagger")
-                && !Context.User.Identity.IsAuthenticated)
+            if (context.Request.Path.StartsWithSegments("/swagger")
+                && !context.User.Identity.IsAuthenticated)
             {
-                Context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                 return;
             }
 
-            await Next.Invoke(Context);
+            await Next.Invoke(context);
         }
     }
 }

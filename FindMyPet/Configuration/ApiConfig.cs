@@ -9,64 +9,64 @@ namespace FindMyPet.Configuration
 {
     public static class ApiConfig
     {
-        public static IServiceCollection AddApiConfig(this IServiceCollection Services)
+        public static IServiceCollection AddApiConfig(this IServiceCollection services)
         {
-            Services.AddControllers();
+            services.AddControllers();
 
-            Services.AddApiVersioning(Options =>
+            services.AddApiVersioning(options =>
             {
-                Options.AssumeDefaultVersionWhenUnspecified = true;
-                Options.DefaultApiVersion = new ApiVersion(1, 0);
-                Options.ReportApiVersions = true;
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.DefaultApiVersion = new ApiVersion(1, 0);
+                options.ReportApiVersions = true;
             });
 
-            Services.AddVersionedApiExplorer(Options =>
+            services.AddVersionedApiExplorer(options =>
             {
-                Options.GroupNameFormat = "'v'VVV";
-                Options.SubstituteApiVersionInUrl = true;
+                options.GroupNameFormat = "'v'VVV";
+                options.SubstituteApiVersionInUrl = true;
             });
 
-            Services.Configure<ApiBehaviorOptions>(Options =>
+            services.Configure<ApiBehaviorOptions>(options =>
             {
-                Options.SuppressModelStateInvalidFilter = true;
+                options.SuppressModelStateInvalidFilter = true;
             });
 
-            Services.AddCors(Options =>
+            services.AddCors(Options =>
             {
                 Options.AddPolicy("Development", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
                 Options.AddPolicy("Production", builder => builder.WithMethods("GET").WithOrigins("http://desenvolvedor.io").SetIsOriginAllowedToAllowWildcardSubdomains().AllowAnyHeader());
             });
 
-            return Services;
+            return services;
         }
 
-        public static IApplicationBuilder UseApiConfig(this IApplicationBuilder App, IWebHostEnvironment Env)
+        public static IApplicationBuilder UseApiConfig(this IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (Env.IsDevelopment())
+            if (env.IsDevelopment())
             {
-                App.UseCors("Development");
-                App.UseDeveloperExceptionPage();
+                app.UseCors("Development");
+                app.UseDeveloperExceptionPage();
             }
             else
             {
-                App.UseCors("Development"); // Usar apenas nas demos => Configuração Ideal: Production
-                App.UseHsts();
+                app.UseCors("Development"); // Usar apenas nas demos => Configuração Ideal: Production
+                app.UseHsts();
             }
 
-            App.UseMiddleware<ExceptionMiddleware>();
-            App.UseHttpsRedirection();
-            App.UseRouting();
-            App.UseAuthentication();
-            App.UseAuthorization();
+            app.UseMiddleware<ExceptionMiddleware>();
+            app.UseHttpsRedirection();
+            app.UseRouting();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
-            App.UseStaticFiles();
+            app.UseStaticFiles();
 
-            App.UseEndpoints(Endpoints =>
+            app.UseEndpoints(endpoints =>
             {
-                Endpoints.MapControllers();
+                endpoints.MapControllers();
             });
 
-            return App;
+            return app;
         }
     }
 }

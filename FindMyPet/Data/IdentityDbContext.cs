@@ -6,9 +6,10 @@ using System;
 
 namespace FindMyPet.Data
 {
-    public class IdentityDbContext : IdentityDbContext<User, IdentityRole<long>, long, IdentityUserClaim<long>, IdentityUserRole<long>, IdentityUserLogin<long>, IdentityRoleClaim<long>, IdentityUserToken<long>>
+    public class IdentityDbContext : IdentityDbContext<User, IdentityRole<Guid>, Guid, IdentityUserClaim<Guid>, IdentityUserRole<Guid>, IdentityUserLogin<Guid>, IdentityRoleClaim<Guid>, IdentityUserToken<Guid>>
     {
-        public IdentityDbContext(DbContextOptions<IdentityDbContext> Options) : base(Options) { }
+        public IdentityDbContext(DbContextOptions<IdentityDbContext> options) : base(options) { }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder Builder)
         {
