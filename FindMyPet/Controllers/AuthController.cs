@@ -18,6 +18,7 @@ using Newtonsoft.Json;
 using AppleAuth;
 using FindMyPet.Dto.Requests;
 using FindMyPet.Dto.Responses;
+using FindMyPet.Services;
 
 namespace FindMyPet.Controllers
 {
@@ -25,19 +26,44 @@ namespace FindMyPet.Controllers
     [ApiController]
     public class AuthController : BaseController
     {
-        private readonly UserManager<User> UserManager;
-        private readonly SignInManager<User> SignInManager;
-        private readonly IMapper Mapper;
-        private readonly JwtSettings JwtSettings;
         private readonly FacebookAuthSettings FacebookAuthSettings;
+        private readonly AuthenticationService AuthenticationService;
 
-        public AuthController(INotificator notificator, UserManager<User> userManager, SignInManager<User> signInManager, IMapper mapper, IJwtUser user, IOptions<JwtSettings> jwtSettings, IOptions<FacebookAuthSettings> facebookAuthSettings) : base(notificator, user)
+        public AuthController(INotificator notificator, IJwtUser user, IOptions<FacebookAuthSettings> facebookAuthSettings, AuthenticationService authenticationService) : base(notificator, user)
         {
-            this.UserManager = userManager;
-            this.SignInManager = signInManager;
-            this.Mapper = mapper;
-            this.JwtSettings = jwtSettings.Value;
             this.FacebookAuthSettings = facebookAuthSettings.Value;
+            this.AuthenticationService = authenticationService;
+        }
+
+        [HttpPost("register")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Register(UserRegisterDto userRegisterDto)
+        {
+            if (!ModelState.IsValid) return CustomResponse(ModelState);
+
+            var user = new User
+            {
+                UserName = userRegisterDto.UserName,
+                Email = userRegisterDto.Email
+            };
+
+            var result = await AuthenticationService.UserManager.CreateAsync(user, userRegisterDto.Password);
+
+            if (result.Succeeded)
+            {
+                user = await AuthenticationService.UserManager.FindByEmailAsync(user.Email);
+                await AuthenticationService.SignInManager.SignInAsync(user, false);
+
+                var response = await AuthenticationService.GetUserLoginResponse(user);
+
+                return CustomResponse(response);
+            }
+            foreach (var error in result.Errors)
+            {
+                NotificateError(error.Description);
+            }
+
+            return CustomResponse();
         }
 
         [HttpPost("login")]
@@ -46,15 +72,17 @@ namespace FindMyPet.Controllers
         {
             if (!ModelState.IsValid) return CustomResponse(ModelState);
 
-            var user = await UserManager.FindByEmailAsync(userLogin.Email);
+            var user = await AuthenticationService.UserManager.FindByEmailAsync(userLogin.Email);
 
-            if (User != null)
+            if (user != null)
             {
-                var result = await SignInManager.PasswordSignInAsync(user, userLogin.Password, false, true);
+                var result = await AuthenticationService.SignInManager.PasswordSignInAsync(user, userLogin.Password, false, true);
 
                 if (result.Succeeded)
                 {
-                    return CustomResponse(await GerarJwt(user));
+                    var response = await AuthenticationService.GetUserLoginResponse(user);
+
+                    return CustomResponse(response);
                 }
                 if (result.IsLockedOut)
                 {
@@ -64,6 +92,32 @@ namespace FindMyPet.Controllers
             }
             
             NotificateError("Usuário ou Senha incorretos");
+            return CustomResponse();
+        }
+
+        [HttpPost("refresh-token")]
+        public async Task<ActionResult> RefreshToken([FromBody] string refreshToken)
+        {
+            if (string.IsNullOrEmpty(refreshToken))
+            {
+                NotificateError("Refresh Token inválido");
+                return CustomResponse();
+            }
+
+            var token = await AuthenticationService.CheckRefreshToken(Guid.Parse(refreshToken));
+
+            if (token != null)
+            {
+                var user = await AuthenticationService.UserManager.FindByEmailAsync(token.Email);
+
+                if (user != null)
+                {
+                    return CustomResponse(await AuthenticationService.GetUserLoginResponse(user));
+                }
+            }
+
+            NotificateError("Refresh Token expirado");
+
             return CustomResponse();
         }
 
@@ -91,7 +145,7 @@ namespace FindMyPet.Controllers
             var userInfo = JsonConvert.DeserializeObject<FacebookUserData>(userInfoResponse);
 
             // 4. ready to create the local user account (if necessary) and jwt
-            var user = await UserManager.FindByEmailAsync(userInfo.Email);
+            var user = await AuthenticationService.UserManager.FindByEmailAsync(userInfo.Email);
 
             if (user == null)
             {
@@ -102,14 +156,16 @@ namespace FindMyPet.Controllers
                     AvatarUrl = userInfo.Picture.Data.Url
                 };
 
-                var result = await UserManager.CreateAsync(user, Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Substring(0, 8));
+                var result = await AuthenticationService.UserManager.CreateAsync(user, Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Substring(0, 8));
 
                 if (result.Succeeded)
                 {
-                    user = await UserManager.FindByEmailAsync(user.Email);
-                    await SignInManager.SignInAsync(user, false);
+                    user = await AuthenticationService.UserManager.FindByEmailAsync(user.Email);
+                    await AuthenticationService.SignInManager.SignInAsync(user, false);
 
-                    return CustomResponse(await GerarJwt(user));
+                    var response = await AuthenticationService.GetUserLoginResponse(user);
+
+                    return CustomResponse(response);
                 }
 
                 foreach (var error in result.Errors)
@@ -118,11 +174,14 @@ namespace FindMyPet.Controllers
                 }
 
                 return CustomResponse();
+            } 
+            else 
+            {
+                await AuthenticationService.SignInManager.SignInAsync(user, false);
+                var response = await AuthenticationService.GetUserLoginResponse(user);
+
+                return CustomResponse(response);
             }
-
-            await SignInManager.SignInAsync(user, false);
-
-            return CustomResponse(await GerarJwt(user));
         }
 
         [HttpPost("login/apple")]
@@ -134,9 +193,9 @@ namespace FindMyPet.Controllers
             var privateKey = System.IO.File.ReadAllText("path/to/file.p8");
             var provider = new AppleAuthProvider("MyClientID", "MyTeamID", "MyKeyID", "https://myredirecturl.com/HandleResponseFromApple", "SomeState");
 
-            var refreshToken = await provider.GetRefreshToken(apple.AccessToken, privateKey);
+            var appleRefreshToken = await provider.GetRefreshToken(apple.AccessToken, privateKey);
 
-            var user = await UserManager.FindByEmailAsync(refreshToken.UserInformation.Email);
+            var user = await AuthenticationService.UserManager.FindByEmailAsync(appleRefreshToken.UserInformation.Email);
 
             if (user == null)
             {
@@ -146,14 +205,16 @@ namespace FindMyPet.Controllers
                     Email = apple.Email
                 };
 
-                var result = await UserManager.CreateAsync(user, Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Substring(0, 8));
+                var result = await AuthenticationService.UserManager.CreateAsync(user, Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Substring(0, 8));
 
                 if (result.Succeeded)
                 {
-                    user = await UserManager.FindByEmailAsync(user.Email);
-                    await SignInManager.SignInAsync(user, false);
+                    user = await AuthenticationService.UserManager.FindByEmailAsync(user.Email);
+                    await AuthenticationService.SignInManager.SignInAsync(user, false);
 
-                    return CustomResponse(await GerarJwt(user));
+                    var response = await AuthenticationService.GetUserLoginResponse(user);
+
+                    return CustomResponse(response);
                 }
 
                 foreach (var error in result.Errors)
@@ -162,83 +223,14 @@ namespace FindMyPet.Controllers
                 }
 
                 return CustomResponse();
+            } 
+            else
+            {
+                await AuthenticationService.SignInManager.SignInAsync(user, false);
+                var response = await AuthenticationService.GetUserLoginResponse(user);
+
+                return CustomResponse(response);
             }
-
-            await SignInManager.SignInAsync(user, false);
-
-            return CustomResponse(await GerarJwt(user));
         }
-
-        [HttpPost("register")]
-        [AllowAnonymous]
-        public async Task<IActionResult> Register(UserRegisterDto userRegisterDto)
-        {
-            if (!ModelState.IsValid) return CustomResponse(ModelState);
-
-            var user = new User
-            {
-                UserName = userRegisterDto.UserName,
-                Email = userRegisterDto.Email
-            };
-
-            var result = await UserManager.CreateAsync(user, userRegisterDto.Password);
-
-            if (result.Succeeded)
-            {
-                user = await UserManager.FindByEmailAsync(user.Email);
-                await SignInManager.SignInAsync(user, false);
-
-                return CustomResponse(await GerarJwt(user));
-            }
-            foreach (var error in result.Errors)
-            {
-                NotificateError(error.Description);
-            }
-
-            return CustomResponse();
-        }
-
-        private async Task<UserLoginResponseDto> GerarJwt(User user)
-        {
-            var claims = await UserManager.GetClaimsAsync(user);
-            var userRoles = await UserManager.GetRolesAsync(user);
-
-            claims.Add(new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()));
-            claims.Add(new Claim(JwtRegisteredClaimNames.Email, user.Email));
-            claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
-            claims.Add(new Claim(JwtRegisteredClaimNames.Nbf, ToUnixEpochDate(DateTime.UtcNow).ToString()));
-            claims.Add(new Claim(JwtRegisteredClaimNames.Iat, ToUnixEpochDate(DateTime.UtcNow).ToString(), ClaimValueTypes.Integer64));
-
-            foreach (var userRole in userRoles)
-            {
-                claims.Add(new Claim("role", userRole));
-            }
-
-            var identityClaims = new ClaimsIdentity();
-            identityClaims.AddClaims(claims);
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(JwtSettings.Secret);
-            var token = tokenHandler.CreateToken(new SecurityTokenDescriptor
-            {
-                Issuer = JwtSettings.Issuer,
-                Audience = JwtSettings.Audience,
-                Subject = identityClaims,
-                Expires = DateTime.UtcNow.AddHours(JwtSettings.ExpirationHours),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            });
-
-            var encodedToken = tokenHandler.WriteToken(token);
-
-            var response = new UserLoginResponseDto
-            {
-                Token = encodedToken,
-                User = Mapper.Map<UserDto>(User)
-            };
-
-            return response;
-        }
-
-        private static long ToUnixEpochDate(DateTime Date) => (long)Math.Round((Date.ToUniversalTime() - new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero)).TotalSeconds);
     }
 }

@@ -39,9 +39,15 @@ namespace FindMyPet.Configuration
 
             // JWT
             var jwtSettingsSection = configuration.GetSection(nameof(JwtSettings));
+
+            // Facebook
             var facebookAuthSettingsSection = configuration.GetSection(nameof(FacebookAuthSettings));
 
+            // Refresh Token
+            var refreshTokenSettingsSection = configuration.GetSection(nameof(RefreshTokenSettings));
+
             services.Configure<JwtSettings>(jwtSettingsSection);
+            services.Configure<RefreshTokenSettings>(refreshTokenSettingsSection);
             services.Configure<FacebookAuthSettings>(facebookAuthSettingsSection);
 
             var jwtSettings = jwtSettingsSection.Get<JwtSettings>();

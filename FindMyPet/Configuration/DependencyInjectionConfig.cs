@@ -1,6 +1,7 @@
 ﻿using FindMyPet.Business.Interfaces;
 using FindMyPet.Business.Models;
 using FindMyPet.Repository.Context;
+using FindMyPet.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -20,6 +21,7 @@ namespace FindMyPet.Configuration
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddScoped<IJwtUser, JwtUser>();
+            services.AddScoped<AuthenticationService>();
 
             services.AddScoped<INotificator, Notificator>();
             services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
