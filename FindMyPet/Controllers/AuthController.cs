@@ -96,6 +96,7 @@ namespace FindMyPet.Controllers
         }
 
         [HttpPost("refresh-token")]
+        [AllowAnonymous]
         public async Task<ActionResult> RefreshToken([FromBody] string refreshToken)
         {
             if (string.IsNullOrEmpty(refreshToken))
@@ -127,7 +128,7 @@ namespace FindMyPet.Controllers
         {
             if (!ModelState.IsValid) return CustomResponse(ModelState);
 
-            // 1.generate an app access token
+            // 1. generate an app access token
             var appAccessTokenResponse = await new HttpClient().GetStringAsync($"https://graph.facebook.com/oauth/access_token?client_id={FacebookAuthSettings.AppId}&client_secret={FacebookAuthSettings.AppSecret}&grant_type=client_credentials");
             var appAccessToken = JsonConvert.DeserializeObject<FacebookAppAccessToken>(appAccessTokenResponse);
             // 2. validate the user access token

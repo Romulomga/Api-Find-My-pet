@@ -10,7 +10,6 @@ namespace FindMyPet.Dto.Requests
     {
         [Required(ErrorMessage = "O campo {0} é obrigatório")]
         public string AccessToken { get; set; }
-
         public string UserName { get; set; }
 
         [EmailAddress(ErrorMessage = "O campo {0} está em formato inválido")]

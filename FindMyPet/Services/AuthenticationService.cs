@@ -28,6 +28,7 @@ namespace FindMyPet.Services
         private readonly RefreshTokenSettings RefreshTokenSettings;
         private readonly IdentityDbContext Context;
         private readonly IMapper Mapper;
+        private readonly IJwtUser User;
 
         public AuthenticationService(UserManager<User> userManager, SignInManager<User> signInManager, IJwtUser user, IOptions<JwtSettings> jwtSettings, IOptions<FacebookAuthSettings> facebookAuthSettings, IOptions<RefreshTokenSettings> refreshTokenSettings, IdentityDbContext context, IMapper mapper)
         {
@@ -38,6 +39,7 @@ namespace FindMyPet.Services
             this.RefreshTokenSettings = refreshTokenSettings.Value;
             this.Context = context;
             this.Mapper = mapper;
+            this.User = user;
         }
 
         public async Task<UserLoginResponseDto> GetUserLoginResponse(User user)
@@ -49,6 +51,7 @@ namespace FindMyPet.Services
 
             return GenerateUserLoginResponse(jwt, refreshToken, user);
         }
+
         private async Task<ClaimsIdentity> GetUserClaims(ICollection<Claim> claims, User user)
         {
             var userRoles = await UserManager.GetRolesAsync(user);

@@ -5,6 +5,5 @@
         public UserDto User { get; set; }
         public string Jwt { get; set; }
         public string RefreshToken { get; set; }
-
     }
 }
