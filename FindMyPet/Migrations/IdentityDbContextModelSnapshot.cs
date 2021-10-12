@@ -16,8 +16,104 @@ namespace FindMyPet.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.7")
+                .HasAnnotation("ProductVersion", "5.0.11")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("FindMyPet.Business.Models.Pet", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("PetGenderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PetTypeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PostId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PetGenderId");
+
+                    b.HasIndex("PetTypeId");
+
+                    b.HasIndex("PostId")
+                        .IsUnique();
+
+                    b.ToTable("Pet");
+                });
+
+            modelBuilder.Entity("FindMyPet.Business.Models.PetBreed", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("PetTypeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PetTypeId");
+
+                    b.ToTable("PetBreed");
+                });
+
+            modelBuilder.Entity("FindMyPet.Business.Models.PetGender", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PetGender");
+                });
+
+            modelBuilder.Entity("FindMyPet.Business.Models.PetType", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PetType");
+                });
+
+            modelBuilder.Entity("FindMyPet.Business.Models.Post", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Post");
+                });
 
             modelBuilder.Entity("FindMyPet.Business.Models.RefreshToken", b =>
                 {
@@ -237,6 +333,55 @@ namespace FindMyPet.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("FindMyPet.Business.Models.Pet", b =>
+                {
+                    b.HasOne("FindMyPet.Business.Models.PetGender", "PetGender")
+                        .WithMany("Pets")
+                        .HasForeignKey("PetGenderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FindMyPet.Business.Models.PetType", "PetType")
+                        .WithMany("Pets")
+                        .HasForeignKey("PetTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FindMyPet.Business.Models.Post", "Post")
+                        .WithOne("Pet")
+                        .HasForeignKey("FindMyPet.Business.Models.Pet", "PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PetGender");
+
+                    b.Navigation("PetType");
+
+                    b.Navigation("Post");
+                });
+
+            modelBuilder.Entity("FindMyPet.Business.Models.PetBreed", b =>
+                {
+                    b.HasOne("FindMyPet.Business.Models.PetType", "PetType")
+                        .WithMany("PetBreeds")
+                        .HasForeignKey("PetTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PetType");
+                });
+
+            modelBuilder.Entity("FindMyPet.Business.Models.Post", b =>
+                {
+                    b.HasOne("FindMyPet.Business.Models.User", "User")
+                        .WithMany("Posts")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
@@ -286,6 +431,28 @@ namespace FindMyPet.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("FindMyPet.Business.Models.PetGender", b =>
+                {
+                    b.Navigation("Pets");
+                });
+
+            modelBuilder.Entity("FindMyPet.Business.Models.PetType", b =>
+                {
+                    b.Navigation("PetBreeds");
+
+                    b.Navigation("Pets");
+                });
+
+            modelBuilder.Entity("FindMyPet.Business.Models.Post", b =>
+                {
+                    b.Navigation("Pet");
+                });
+
+            modelBuilder.Entity("FindMyPet.Business.Models.User", b =>
+                {
+                    b.Navigation("Posts");
                 });
 #pragma warning restore 612, 618
         }

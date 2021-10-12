@@ -7,3 +7,6 @@ C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet.Domain\obj\Debug\netcoreapp3
 C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet.Domain\obj\Debug\netcoreapp3.1\FindMyPet.Business.dll
 C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet.Domain\obj\Debug\netcoreapp3.1\FindMyPet.Business.pdb
 C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet.Domain\obj\Debug\netcoreapp3.1\FindMyPet.Business.csproj.AssemblyReference.cache
+C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet.Domain\bin\Debug\netcoreapp3.1\FindMyPet.Business.runtimeconfig.json
+C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet.Domain\bin\Debug\netcoreapp3.1\FindMyPet.Business.runtimeconfig.dev.json
+C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet.Domain\obj\Debug\netcoreapp3.1\FindMyPet.Business.genruntimeconfig.cache

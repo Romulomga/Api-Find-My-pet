@@ -1,11 +1,11 @@
-﻿using FindMyPet.Business.Interfaces;
+﻿using FindMyPet.Interfaces;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text;
 
-namespace FindMyPet.Business.Models
+namespace FindMyPet.Models
 {
     public class JwtUser : IJwtUser
     {

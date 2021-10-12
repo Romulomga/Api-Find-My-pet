@@ -4,6 +4,7 @@ using FindMyPet.Business.Models;
 using FindMyPet.Data;
 using FindMyPet.Dto.Responses;
 using FindMyPet.Helpers;
+using FindMyPet.Interfaces;
 using FindMyPet.Repository.Context;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

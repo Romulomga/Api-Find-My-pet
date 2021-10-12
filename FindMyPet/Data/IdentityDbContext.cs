@@ -10,7 +10,11 @@ namespace FindMyPet.Data
     {
         public IdentityDbContext(DbContextOptions<IdentityDbContext> options) : base(options) { }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
-
+        public DbSet<Pet> Pet { get; set; }
+        public DbSet<PetBreed> PetBreed { get; set; }
+        public DbSet<PetGender> PetGender { get; set; }
+        public DbSet<PetType> PetType { get; set; }
+        public DbSet<Post> Post { get; set; }
         protected override void OnModelCreating(ModelBuilder Builder)
         {
             base.OnModelCreating(Builder);

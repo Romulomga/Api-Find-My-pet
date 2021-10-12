@@ -22,3 +22,6 @@ C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet.Repository\bin\Debug\netcore
 C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet.Repository\bin\Debug\netcoreapp3.1\FindMyPet.Business.pdb
 C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet.Repository\obj\Debug\netcoreapp3.1\FindMyPet.Repository.csproj.CopyComplete
 C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet.Repository\obj\Debug\netcoreapp3.1\FindMyPet.Repository.csproj.AssemblyReference.cache
+C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet.Repository\bin\Debug\netcoreapp3.1\FindMyPet.Repository.runtimeconfig.json
+C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet.Repository\bin\Debug\netcoreapp3.1\FindMyPet.Repository.runtimeconfig.dev.json
+C:\Users\Rômulo Monteiro\Api Find My pet\FindMyPet.Repository\obj\Debug\netcoreapp3.1\FindMyPet.Repository.genruntimeconfig.cache

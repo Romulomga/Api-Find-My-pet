@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text;
 
-namespace FindMyPet.Business.Interfaces
+namespace FindMyPet.Interfaces
 {
     public interface IJwtUser
     {

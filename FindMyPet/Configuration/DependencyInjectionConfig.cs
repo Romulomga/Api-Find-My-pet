@@ -1,15 +1,13 @@
 ﻿using FindMyPet.Business.Interfaces;
 using FindMyPet.Business.Models;
+using FindMyPet.Interfaces;
+using FindMyPet.Models;
 using FindMyPet.Repository.Context;
 using FindMyPet.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace FindMyPet.Configuration
 {

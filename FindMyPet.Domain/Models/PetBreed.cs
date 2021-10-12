@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using FindMyPet.Business.Models.Base;
+using System;
 
 namespace FindMyPet.Business.Models
 {
-    class PetBreed
+    public class PetBreed: BaseEntity
     {
-        public Guid Id { get; set; }
         public string Name { get; set; }
+        public Guid PetTypeId { get; set; }
+        public PetType PetType { get; set; }
     }
 }
