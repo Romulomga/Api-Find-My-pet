@@ -1,9 +1,0 @@
-C:\Users\Rômulo Monteiro\Desktop\Api Find My pet\FindMyPet.Domain\bin\Debug\netcoreapp3.1\FindMyPet.Domain.deps.json
-C:\Users\Rômulo Monteiro\Desktop\Api Find My pet\FindMyPet.Domain\bin\Debug\netcoreapp3.1\FindMyPet.Domain.dll
-C:\Users\Rômulo Monteiro\Desktop\Api Find My pet\FindMyPet.Domain\bin\Debug\netcoreapp3.1\FindMyPet.Domain.pdb
-C:\Users\Rômulo Monteiro\Desktop\Api Find My pet\FindMyPet.Domain\obj\Debug\netcoreapp3.1\FindMyPet.Domain.csprojAssemblyReference.cache
-C:\Users\Rômulo Monteiro\Desktop\Api Find My pet\FindMyPet.Domain\obj\Debug\netcoreapp3.1\FindMyPet.Domain.AssemblyInfoInputs.cache
-C:\Users\Rômulo Monteiro\Desktop\Api Find My pet\FindMyPet.Domain\obj\Debug\netcoreapp3.1\FindMyPet.Domain.AssemblyInfo.cs
-C:\Users\Rômulo Monteiro\Desktop\Api Find My pet\FindMyPet.Domain\obj\Debug\netcoreapp3.1\FindMyPet.Domain.csproj.CoreCompileInputs.cache
-C:\Users\Rômulo Monteiro\Desktop\Api Find My pet\FindMyPet.Domain\obj\Debug\netcoreapp3.1\FindMyPet.Domain.dll
-C:\Users\Rômulo Monteiro\Desktop\Api Find My pet\FindMyPet.Domain\obj\Debug\netcoreapp3.1\FindMyPet.Domain.pdb
