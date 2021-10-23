@@ -2,12 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <UserSecretsId>7b136147-d645-45f3-bcad-55534d9b6b4c</UserSecretsId>
   </PropertyGroup>
 
 <ItemGroup>
 	<PackageReference Include="AppleAuth.NET" Version="1.0.3" />
 	<PackageReference Include="AutoMapper" Version="10.1.1" />
 	<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.11" />
+	<PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.7" />
 	<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.11" />
 	<PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
 	<PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />
@@ -17,7 +19,9 @@
 		<PrivateAssets>all</PrivateAssets>
 		<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	</PackageReference>
-	<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.2" />
+	<PackageReference Include="Microsoft.Identity.Web" Version="1.19.0-preview" />
+	<PackageReference Include="Microsoft.Identity.Web.UI" Version="1.19.0-preview" />
+	<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
 </ItemGroup>
 	
   <ItemGroup>

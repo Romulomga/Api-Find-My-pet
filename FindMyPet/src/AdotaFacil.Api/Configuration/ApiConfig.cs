@@ -42,7 +42,8 @@ namespace AdotaFacil.Api.Configuration
             services.AddCors(Options =>
             {
                 Options.AddPolicy("Development", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-                Options.AddPolicy("Production", builder => builder.WithMethods("GET").WithOrigins("http://desenvolvedor.io").SetIsOriginAllowedToAllowWildcardSubdomains().AllowAnyHeader());
+                //Options.AddPolicy("Production", builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+                Options.AddPolicy("Production", builder => builder.WithMethods("GET").WithOrigins("https://adotafacilapi20211019013257.azurewebsites.net").SetIsOriginAllowedToAllowWildcardSubdomains().AllowAnyHeader());
             });
 
             return services;
@@ -57,7 +58,7 @@ namespace AdotaFacil.Api.Configuration
             }
             else
             {
-                app.UseCors("Development"); // Usar apenas nas demos => Configuração Ideal: Production
+                app.UseCors("Production"); // Usar apenas nas demos => Configuração Ideal: Production
                 app.UseHsts();
             }
 

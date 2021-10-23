@@ -1,5 +1,6 @@
 ﻿using AdotaFacil.Business.Models.Base;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace AdotaFacil.Business.Models
 {

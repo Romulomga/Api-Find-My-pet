@@ -21,8 +21,11 @@ namespace AdotaFacil.Repository.Context
 
         protected override void OnModelCreating(ModelBuilder Builder)
         {
-            Builder.Entity<Post>().Property(p => p.WktPolygon).HasColumnType("geography");
+            foreach (var property in Builder.Model.GetEntityTypes().SelectMany(e => e.GetProperties().Where(p => p.ClrType == typeof(string))))property.SetColumnType("varchar(100)");
+            foreach (var relationship in Builder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys())) relationship.DeleteBehavior = DeleteBehavior.ClientSetNull;
 
+            Builder.ApplyConfigurationsFromAssembly(typeof(MyDbContext).Assembly);
+            
             base.OnModelCreating(Builder);
         }
 
