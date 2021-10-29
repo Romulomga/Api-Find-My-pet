@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
 
 namespace AdotaFacil.Api.Configuration
 {
@@ -19,7 +20,12 @@ namespace AdotaFacil.Api.Configuration
                 options.UseSqlServer(configuration.GetConnectionString("DefaultConnection"), o => o.UseNetTopologySuite());
             });
 
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(o =>
+            {
+                o.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            });
+
+            services.AddHttpClient();
 
             services.AddApiVersioning(options =>
             {

@@ -3,7 +3,6 @@ using AdotaFacil.Business.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -13,6 +12,7 @@ using AdotaFacil.Api.Services;
 using AdotaFacil.Api.Dto.Requests;
 using AdotaFacil.Api.Controllers.Base;
 using AdotaFacil.Business.Models;
+using System.Text.Json;
 
 namespace AdotaFacil.Api.Controllers
 {
@@ -21,17 +21,19 @@ namespace AdotaFacil.Api.Controllers
     [ApiController]
     public class AuthController : BaseController
     {
-        private readonly FacebookAuthSettings FacebookAuthSettings;
-        private readonly AuthenticationService AuthenticationService;
-        private readonly SignInManager<User> SignInManager;
-        private readonly UserManager<User> UserManager;
+        private readonly FacebookAuthSettings _facebookAuthSettings;
+        private readonly AuthenticationService _authenticationService;
+        private readonly SignInManager<User> _signInManager;
+        private readonly UserManager<User> _userManager;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public AuthController(INotificator notificator, IJwtUser user, IOptions<FacebookAuthSettings> facebookAuthSettings, AuthenticationService authenticationService, UserManager<User> userManager, SignInManager<User> signInManager) : base(notificator, user)
+        public AuthController(INotificator notificator, IJwtUser user, IOptions<FacebookAuthSettings> facebookAuthSettings, AuthenticationService authenticationService, UserManager<User> userManager, SignInManager<User> signInManager, IHttpClientFactory httpClientFactory) : base(notificator, user)
         {
-            this.FacebookAuthSettings = facebookAuthSettings.Value;
-            this.AuthenticationService = authenticationService;
-            this.UserManager = userManager;
-            this.SignInManager = signInManager;
+            _facebookAuthSettings = facebookAuthSettings.Value;
+            _authenticationService = authenticationService;
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _httpClientFactory = httpClientFactory;
         }
 
         [HttpPost("register")]
@@ -46,14 +48,14 @@ namespace AdotaFacil.Api.Controllers
                 Email = userRegisterDto.Email
             };
 
-            var result = await UserManager.CreateAsync(user, userRegisterDto.Password);
+            var result = await _userManager.CreateAsync(user, userRegisterDto.Password);
 
             if (result.Succeeded)
             {
-                user = await UserManager.FindByEmailAsync(user.Email);
-                await SignInManager.SignInAsync(user, false);
+                user = await _userManager.FindByEmailAsync(user.Email);
+                await _signInManager.SignInAsync(user, false);
 
-                var response = await AuthenticationService.GetUserLoginResponse(user);
+                var response = await _authenticationService.GetUserLoginResponse(user);
 
                 return CustomResponse(response);
             }
@@ -71,15 +73,15 @@ namespace AdotaFacil.Api.Controllers
         {
             if (!ModelState.IsValid) return CustomResponse(ModelState);
 
-            var user = await UserManager.FindByEmailAsync(userLogin.Email);
+            var user = await _userManager.FindByEmailAsync(userLogin.Email);
 
             if (user != null)
             {
-                var result = await SignInManager.PasswordSignInAsync(user, userLogin.Password, false, true);
+                var result = await _signInManager.PasswordSignInAsync(user, userLogin.Password, false, true);
 
                 if (result.Succeeded)
                 {
-                    var response = await AuthenticationService.GetUserLoginResponse(user);
+                    var response = await _authenticationService.GetUserLoginResponse(user);
 
                     return CustomResponse(response);
                 }
@@ -104,15 +106,15 @@ namespace AdotaFacil.Api.Controllers
                 return CustomResponse();
             }
 
-            var token = await AuthenticationService.CheckRefreshToken(Guid.Parse(refreshToken));
+            var token = await _authenticationService.CheckRefreshToken(Guid.Parse(refreshToken));
 
             if (token != null)
             {
-                var user = await UserManager.FindByEmailAsync(token.Email);
+                var user = await _userManager.FindByEmailAsync(token.Email);
 
                 if (user != null)
                 {
-                    return CustomResponse(await AuthenticationService.GetUserLoginResponse(user));
+                    return CustomResponse(await _authenticationService.GetUserLoginResponse(user));
                 }
             }
 
@@ -128,11 +130,12 @@ namespace AdotaFacil.Api.Controllers
             if (!ModelState.IsValid) return CustomResponse(ModelState);
 
             // 1. generate an app access token
-            var appAccessTokenResponse = await new HttpClient().GetStringAsync($"https://graph.facebook.com/oauth/access_token?client_id={FacebookAuthSettings.AppId}&client_secret={FacebookAuthSettings.AppSecret}&grant_type=client_credentials");
-            var appAccessToken = JsonConvert.DeserializeObject<FacebookAppAccessToken>(appAccessTokenResponse);
+            var httpClient = _httpClientFactory.CreateClient("Facebook");
+            var appAccessTokenResponse = await httpClient.GetStringAsync($"https://graph.facebook.com/oauth/access_token?client_id={_facebookAuthSettings.AppId}&client_secret={_facebookAuthSettings.AppSecret}&grant_type=client_credentials");
+            var appAccessToken = JsonSerializer.Deserialize<FacebookAppAccessToken>(appAccessTokenResponse);
             // 2. validate the user access token
-            var userAccessTokenValidationResponse = await new HttpClient().GetStringAsync($"https://graph.facebook.com/debug_token?input_token={facebook.AccessToken}&access_token={appAccessToken.AccessToken}");
-            var userAccessTokenValidation = JsonConvert.DeserializeObject<FacebookUserAccessTokenValidation>(userAccessTokenValidationResponse);
+            var userAccessTokenValidationResponse = await httpClient.GetStringAsync($"https://graph.facebook.com/debug_token?input_token={facebook.AccessToken}&access_token={appAccessToken.AccessToken}");
+            var userAccessTokenValidation = JsonSerializer.Deserialize<FacebookUserAccessTokenValidation>(userAccessTokenValidationResponse);
 
             if (!userAccessTokenValidation.Data.IsValid)
             {
@@ -141,11 +144,11 @@ namespace AdotaFacil.Api.Controllers
             }
 
             // 3. we've got a valid token so we can request user data from fb
-            var userInfoResponse = await new HttpClient().GetStringAsync($"https://graph.facebook.com/v10.0/me?fields=id,email,name,picture&access_token={facebook.AccessToken}");
-            var userInfo = JsonConvert.DeserializeObject<FacebookUserData>(userInfoResponse);
+            var userInfoResponse = await httpClient.GetStringAsync($"https://graph.facebook.com/v10.0/me?fields=id,email,name,picture&access_token={facebook.AccessToken}");
+            var userInfo = JsonSerializer.Deserialize<FacebookUserData>(userInfoResponse);
 
             // 4. ready to create the local user account (if necessary) and jwt
-            var user = await UserManager.FindByEmailAsync(userInfo.Email);
+            var user = await _userManager.FindByEmailAsync(userInfo.Email);
 
             if (user == null)
             {
@@ -156,14 +159,14 @@ namespace AdotaFacil.Api.Controllers
                     AvatarUrl = userInfo.Picture.Data.Url
                 };
 
-                var result = await UserManager.CreateAsync(user, Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Substring(0, 8));
+                var result = await _userManager.CreateAsync(user, Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Substring(0, 8));
 
                 if (result.Succeeded)
                 {
-                    user = await UserManager.FindByEmailAsync(user.Email);
-                    await SignInManager.SignInAsync(user, false);
+                    user = await _userManager.FindByEmailAsync(user.Email);
+                    await _signInManager.SignInAsync(user, false);
 
-                    var response = await AuthenticationService.GetUserLoginResponse(user);
+                    var response = await _authenticationService.GetUserLoginResponse(user);
 
                     return CustomResponse(response);
                 }
@@ -177,8 +180,8 @@ namespace AdotaFacil.Api.Controllers
             }
             else
             {
-                await SignInManager.SignInAsync(user, false);
-                var response = await AuthenticationService.GetUserLoginResponse(user);
+                await _signInManager.SignInAsync(user, false);
+                var response = await _authenticationService.GetUserLoginResponse(user);
 
                 return CustomResponse(response);
             }
@@ -195,7 +198,7 @@ namespace AdotaFacil.Api.Controllers
 
             var appleRefreshToken = await provider.GetRefreshToken(apple.AccessToken, privateKey);
 
-            var user = await UserManager.FindByEmailAsync(appleRefreshToken.UserInformation.Email);
+            var user = await _userManager.FindByEmailAsync(appleRefreshToken.UserInformation.Email);
 
             if (user == null)
             {
@@ -205,14 +208,14 @@ namespace AdotaFacil.Api.Controllers
                     Email = apple.Email
                 };
 
-                var result = await UserManager.CreateAsync(user, Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Substring(0, 8));
+                var result = await _userManager.CreateAsync(user, Convert.ToBase64String(Guid.NewGuid().ToByteArray()).Substring(0, 8));
 
                 if (result.Succeeded)
                 {
-                    user = await UserManager.FindByEmailAsync(user.Email);
-                    await SignInManager.SignInAsync(user, false);
+                    user = await _userManager.FindByEmailAsync(user.Email);
+                    await _signInManager.SignInAsync(user, false);
 
-                    var response = await AuthenticationService.GetUserLoginResponse(user);
+                    var response = await _authenticationService.GetUserLoginResponse(user);
 
                     return CustomResponse(response);
                 }
@@ -226,8 +229,8 @@ namespace AdotaFacil.Api.Controllers
             }
             else
             {
-                await SignInManager.SignInAsync(user, false);
-                var response = await AuthenticationService.GetUserLoginResponse(user);
+                await _signInManager.SignInAsync(user, false);
+                var response = await _authenticationService.GetUserLoginResponse(user);
 
                 return CustomResponse(response);
             }
